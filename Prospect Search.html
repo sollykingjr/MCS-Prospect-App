@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f7f5ef">
+<title>Prospect Search</title>
+<style>
+:root{
+  --bg:#f7f5ef;--surf:#fff;--bdr:rgba(0,0,0,.08);--bdr2:rgba(0,0,0,.15);
+  --tx:#1f1f1d;--tx2:#6b6b66;--tx3:#95948e;
+  --acc:#185fa5;--acc-bg:#E6F1FB;
+  --b5-bg:#C0DD97;--b5-tx:#27500A;
+  --b4-bg:#EAF3DE;--b4-tx:#3B6D11;
+  --b3-bg:#FAEEDA;--b3-tx:#854F0B;
+  --b2-bg:#F1EFE8;--b2-tx:#5F5E5A;
+  --up:#27500A;--dn:#791F1F;
+  /* Investment tiers */
+  --inv1-bg:#DBEAFE;--inv1-tx:#1e40af;
+  --inv2-bg:#BFDBFE;--inv2-tx:#1d4ed8;
+  --inv3-bg:#3B82F6;--inv3-tx:#fff;
+  --inv4-bg:#7C3AED;--inv4-tx:#fff;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a18;--surf:#242422;--bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.18);
+    --tx:#f0efe8;--tx2:#a8a79f;--tx3:#75746e;
+    --acc:#85B7EB;--acc-bg:#0C447C;
+    --b5-bg:#3B6D11;--b5-tx:#EAF3DE;
+    --b4-bg:#173404;--b4-tx:#C0DD97;
+    --b3-bg:#412402;--b3-tx:#FAC775;
+    --b2-bg:#2C2C2A;--b2-tx:#B4B2A9;
+    --up:#97C459;--dn:#F09595;
+    --inv1-bg:#1e3a5f;--inv1-tx:#93C5FD;
+    --inv2-bg:#1e3a8a;--inv2-tx:#BFDBFE;
+    --inv3-bg:#1d4ed8;--inv3-tx:#fff;
+    --inv4-bg:#6D28D9;--inv4-tx:#fff;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);font-size:15px;overscroll-behavior-y:contain}
+.tabs{position:sticky;top:0;z-index:10;display:flex;background:var(--bg);border-bottom:.5px solid var(--bdr)}
+.tab{flex:1;padding:11px 2px 9px;border:none;background:transparent;color:var(--tx2);font-size:10px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;line-height:1.2}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc)}
+.hdr{padding:10px 14px 8px;background:var(--bg)}
+.si{position:relative}
+.si input{width:100%;height:44px;padding:0 36px 0 13px;border:.5px solid var(--bdr2);border-radius:10px;background:var(--surf);color:var(--tx);font-size:16px;font-family:inherit;-webkit-appearance:none}
+.si input:focus{outline:none;border-color:var(--acc)}
+.si button{position:absolute;right:8px;top:8px;width:28px;height:28px;border:none;background:transparent;color:var(--tx3);font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.si button.on{display:flex}
+.chips{display:flex;gap:6px;padding:8px 14px 6px;overflow-x:auto;background:var(--bg)}
+.chips::-webkit-scrollbar{display:none}
+.chips2{display:flex;gap:6px;padding:2px 14px 10px;overflow-x:auto;background:var(--bg);border-bottom:.5px solid var(--bdr)}
+.chips2::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 12px;border:.5px solid var(--bdr2);border-radius:20px;background:var(--surf);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.chip.on{background:var(--acc-bg);color:var(--acc);border-color:var(--acc)}
+.meta{padding:7px 14px;font-size:11px;color:var(--tx3);font-weight:500;display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:.04em}
+.list{padding:0 10px 50px}
+/* Card: [rank box] [body] [price box] */
+.card{background:var(--surf);border:.5px solid var(--bdr);border-radius:10px;padding:9px 10px;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.card:active{opacity:.65}
+.card.repeat{border-left:3px solid var(--acc)}
+.rnum{flex-shrink:0;width:40px;height:40px;border-radius:8px;background:var(--acc-bg);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;text-align:center;line-height:1.1}
+.rnum.empty{background:var(--b2-bg);color:var(--tx3);font-size:10px}
+.pbox{flex-shrink:0;min-width:46px;height:40px;border-radius:8px;background:var(--b2-bg);color:var(--tx);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;padding:0 7px;white-space:nowrap}
+.pbox.empty{background:transparent;border:.5px solid var(--bdr);color:var(--tx3)}
+.cbody{flex:1;min-width:0}
+.r1{display:flex;align-items:center;gap:0;margin-bottom:3px}
+.pname{font-size:15px;font-weight:500;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.badge{flex-shrink:0;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:500}
+.b5{background:var(--b5-bg);color:var(--b5-tx)}.b4{background:var(--b4-bg);color:var(--b4-tx)}.b3{background:var(--b3-bg);color:var(--b3-tx)}.b2{background:var(--b2-bg);color:var(--b2-tx)}
+.r2{font-size:12px;color:var(--tx2);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.hs-label{flex-shrink:0;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:500;background:var(--acc-bg);color:var(--acc)}
+.hs-label.repeat{background:var(--b5-bg);color:var(--b5-tx)}
+.hs-label.sleeper{background:var(--b3-bg);color:var(--b3-tx)}
+.wk-badge{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;background:var(--acc-bg);color:var(--acc);margin-right:3px}
+.inv-badge{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;margin-right:3px}
+.inv1{background:var(--inv1-bg);color:var(--inv1-tx)}
+.inv2{background:var(--inv2-bg);color:var(--inv2-tx)}
+.inv3{background:var(--inv3-bg);color:var(--inv3-tx)}
+.inv4{background:var(--inv4-bg);color:var(--inv4-tx)}
+.sold-badge{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;background:var(--b4-bg);color:var(--b4-tx);margin-right:3px}
+.up{color:var(--up);font-weight:500}.dn{color:var(--dn);font-weight:500}
+.empty-msg{text-align:center;padding:50px 20px;color:var(--tx3);font-size:14px}
+.spin{text-align:center;padding:50px 20px;color:var(--tx2);font-size:14px}
+.spin-ring{width:28px;height:28px;border:2.5px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:#FCEBEB;color:#791F1F;padding:12px 14px;border-radius:10px;font-size:13px;margin:12px;line-height:1.5}
+.rfab{position:fixed;bottom:20px;right:16px;width:44px;height:44px;border-radius:50%;background:var(--acc);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
+.rfab svg{width:20px;height:20px;fill:white}
+.rfab.spin svg{animation:spin .7s linear infinite}
+/* Modal */
+.mwrap{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.mwrap.on{display:flex}
+.modal{background:var(--bg);width:100%;max-width:600px;max-height:88vh;border-radius:16px 16px 0 0;padding:18px 18px 28px;overflow-y:auto}
+.mhandle{width:34px;height:4px;background:var(--bdr2);border-radius:2px;margin:0 auto 14px}
+.mname{font-size:21px;font-weight:500;margin-bottom:3px}
+.msub{font-size:13px;color:var(--tx2);margin-bottom:14px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.scard{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:9px 11px}
+.slbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+.sval{font-size:17px;font-weight:500;margin-top:2px}
+.srow{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:9px}
+.srow-t{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px}
+.s3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;text-align:center}
+.sc-l{font-size:10px;color:var(--tx3)}.sc-v{font-size:14px;font-weight:500;margin-top:1px}
+.hs-entry{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:9px}
+.hs-entry.repeat{border-left:3px solid var(--acc)}
+.hs-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hs-wk{font-size:11px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--acc-bg);color:var(--acc)}
+.hs-lvl{font-size:11px;color:var(--tx2)}
+.hs-cat{font-size:11px;padding:2px 7px;border-radius:4px;background:var(--b4-bg);color:var(--b4-tx)}
+.hs-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-bottom:8px}
+.hs-sl{font-size:10px;color:var(--tx3)}.hs-sv{font-size:13px;font-weight:500}
+.hs-notes{font-size:12px;line-height:1.6;color:var(--tx2);border-top:.5px solid var(--bdr);padding-top:8px;margin-top:4px}
+.close-btn{width:100%;height:44px;border:.5px solid var(--bdr2);background:var(--surf);color:var(--tx);border-radius:10px;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:8px}
+/* Charts */
+.chart-wrap{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:9px}
+.chart-title{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px}
+.chart-svg{width:100%;overflow:visible}
+.chart-line{fill:none;stroke:var(--acc);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart-line-rank{fill:none;stroke:var(--b3-tx);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart-dot{fill:var(--acc)}
+.chart-dot-rank{fill:var(--b3-tx)}
+.chart-label{font-size:9px;fill:var(--tx3);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.chart-val{font-size:10px;fill:var(--tx);font-weight:500;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+/* Card tracker */
+.ct-entry{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:7px}
+.ct-entry.sold{border-left:3px solid var(--up)}
+.ct-entry.owned{border-left:3px solid var(--acc)}
+.ct-name{font-size:12px;font-weight:500;color:var(--tx);margin-bottom:6px;line-height:1.4}
+.ct-row{display:flex;gap:12px;flex-wrap:wrap}
+.ct-stat{text-align:left}
+.ct-l{font-size:10px;color:var(--tx3)}.ct-v{font-size:13px;font-weight:500;margin-top:1px}
+.ct-serial{font-size:10px;color:var(--tx3);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-t="all">All</button>
+  <button class="tab" data-t="t200">Top 200 Hitters</button>
+  <button class="tab" data-t="t100">Top 100 Pitchers</button>
+  <button class="tab" data-t="hs">Hot Sheet</button>
+  <button class="tab" data-t="port">Portfolio</button>
+</div>
+
+<div class="hdr">
+  <div class="si">
+    <input id="search" placeholder="Search player or team..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="clear">×</button>
+  </div>
+</div>
+
+<div class="chips" id="chips">
+  <button class="chip on" data-f="all">All BR</button>
+  <button class="chip" data-f="5">BR 5</button>
+  <button class="chip" data-f="4">BR 4+</button>
+  <button class="chip" data-f="owned">Owned</button>
+  <button class="chip" data-f="sold">Sold</button>
+</div>
+<div class="chips2" id="chips2">
+  <button class="chip on" data-p="all">All</button>
+  <button class="chip" data-p="hit">Hitters</button>
+  <button class="chip" data-p="pit">Pitchers</button>
+</div>
+
+<div class="meta"><span id="cntlbl">Loading...</span></div>
+<div class="list" id="list"><div class="spin"><div class="spin-ring"></div>Fetching from Google Sheets...</div></div>
+
+<button class="rfab" id="rfab" title="Refresh">
+  <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-8 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+</button>
+
+<div class="mwrap" id="mwrap">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div id="mcontent"></div>
+    <button class="close-btn" id="closebtn">Close</button>
+  </div>
+</div>
+
+<script>
+const SID = '15pRN3ILeyfbPG2OMRxh0OUtqg6MZCaLMMjwf4yxDV74';
+const TRACKER_SID = '12sNofzPwhb8uR68hT_bJNiLD2MrM0rdoQMPXGTlx2_s';
+const KEY = 'AIzaSyCl43LqZrRJ-MlPkKiKjk51O2Aklv-T0RE';
+const BASE = `https://sheets.googleapis.com/v4/spreadsheets/${SID}/values/`;
+const TRACKER_BASE = `https://sheets.googleapis.com/v4/spreadsheets/${TRACKER_SID}/values/`;
+
+let players=[], top200=[], top100=[], origTop200=[], origTop100=[], hotsheet=[], cards=[];
+let tab='all', brf='all', posf='all', q='';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const cl = v => (!v||String(v).trim()===''||v==='-'||v==='—'||v==='\\-') ? null : String(v).trim();
+const fmt = v => cl(v) ?? '—';
+const fmtP = v => { const c=cl(v); return c?(c.startsWith('$')?c:'$'+c):'—'; };
+const fmtDiff = v => {
+  if(!cl(v)) return '—';
+  const n=parseFloat(v); if(isNaN(n)) return '—';
+  return `<span class="${n>0?'up':'dn'}">${n>0?'+':''}${n}</span>`;
+};
+const fmtPct = v => {
+  if(!cl(v)) return '—';
+  const n=parseFloat(String(v).replace('%',''));
+  if(isNaN(n)) return String(v);
+  return `<span class="${n>0?'up':n<0?'dn':''}">${n>0?'+':''}${n.toFixed(1)}%</span>`;
+};
+const badge = br => {
+  if(!br) return '';
+  const n=parseInt(br); if(isNaN(n)) return '';
+  const c=n>=5?'b5':n===4?'b4':n===3?'b3':'b2';
+  return `<span class="badge ${c}">BR ${n}</span>`;
+};
+const matchQ = (name,team) => {
+  if(!q) return true;
+  const t=q.toLowerCase();
+  return (name||'').toLowerCase().includes(t)||(team||'').toLowerCase().includes(t);
+};
+const parseDate = v => {
+  if(!v) return 0;
+  const d=new Date(v);
+  return isNaN(d)?0:d.getTime();
+};
+const fmtDateLabel = v => {
+  if(!v) return '';
+  const d=new Date(v);
+  if(isNaN(d)) return '';
+  return `${d.getMonth()+1}/${d.getDate()}`;
+};
+
+// ── Resolve most-current data per player (date-based) ────────────────────────
+function resolvePlayerData(name) {
+  const srcPri = {top:0, hs:1, orig:2, buy:3};
+  const candidates = [];
+
+  const buyEntry = players.find(b=>b.name===name);
+  if(buyEntry) candidates.push({src:'buy', ts:parseDate(buyEntry.date), rank:cl(buyEntry.hobby), price:cl(buyEntry.price)});
+
+  [...origTop200,...origTop100].filter(e=>e.name===name).forEach(e=>
+    candidates.push({src:'orig', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+
+  [...top200,...top100].filter(e=>e.name===name).forEach(e=>
+    candidates.push({src:'top', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+
+  hotsheet.filter(h=>h.name===name).forEach(h=>
+    candidates.push({src:'hs', ts:parseDate(h.date), rank:cl(h.hobby), price:cl(h.auto)}));
+
+  if(!candidates.length) return {rank:null,price:null,buy:null,hsLabel:null,priceChange:null};
+
+  candidates.sort((a,b)=>b.ts!==a.ts?b.ts-a.ts:srcPri[a.src]-srcPri[b.src]);
+  const best=candidates[0];
+
+  const buyRating = buyEntry?cl(buyEntry.buy):null;
+
+  const hsEntries = hotsheet.filter(h=>h.name===name);
+  let hsLabel=null;
+  if(hsEntries.length) {
+    const hs=hsEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a);
+    if(hs.repeat) hsLabel='Repeat';
+    else if(cl(hs.category)) hsLabel=cl(hs.category);
+  }
+
+  const buyPrice = buyEntry?cl(buyEntry.price):null;
+  let priceChange=null;
+  if(buyPrice && best.price && best.src!=='buy') {
+    const orig=parseFloat(buyPrice.replace(/[^0-9.]/g,''));
+    const now=parseFloat(best.price.replace(/[^0-9.]/g,''));
+    if(!isNaN(orig)&&!isNaN(now)&&orig>0) {
+      priceChange={orig:buyPrice, now:best.price, pct:parseFloat(((now-orig)/orig*100).toFixed(0))};
+    }
+  }
+
+  return {rank:best.rank, price:best.price, buy:buyRating, hsLabel, priceChange};
+}
+
+// ── History charts ────────────────────────────────────────────────────────────
+function buildHistoryCharts(name) {
+  const pricePoints=[], rankPoints=[];
+
+  const add = (dateVal, rawVal, list) => {
+    const ts=parseDate(dateVal);
+    if(!ts||!rawVal) return;
+    const n=parseFloat(String(rawVal).replace(/[^0-9.]/g,''));
+    if(isNaN(n)) return;
+    list.push({label:fmtDateLabel(dateVal), ts, val:n});
+  };
+
+  const buyEntry=players.find(b=>b.name===name);
+  if(buyEntry) { add(buyEntry.date,buyEntry.price,pricePoints); add(buyEntry.date,buyEntry.hobby,rankPoints); }
+
+  [...origTop200,...origTop100].filter(e=>e.name===name).forEach(e=>{
+    add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints);
+  });
+  [...top200,...top100].filter(e=>e.name===name).forEach(e=>{
+    add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints);
+  });
+  hotsheet.filter(h=>h.name===name).forEach(h=>{
+    add(h.date,h.auto,pricePoints); add(h.date,h.hobby,rankPoints);
+  });
+
+  const dedup = pts => {
+    pts.sort((a,b)=>a.ts-b.ts);
+    const m=new Map();
+    pts.forEach(p=>{ if(!m.has(p.ts)) m.set(p.ts,p); });
+    return [...m.values()];
+  };
+
+  const prices=dedup(pricePoints).filter(p=>!isNaN(p.val));
+  const ranks=dedup(rankPoints).filter(p=>!isNaN(p.val));
+
+  const makeSvg = (points, isRank) => {
+    if(points.length<2) return '';
+    const W=280,H=68,Pt=20,Pb=22,Pl=10,Pr=10;
+    const iW=W-Pl-Pr, iH=H-Pt-Pb;
+    const vals=points.map(p=>p.val);
+    let minV=Math.min(...vals), maxV=Math.max(...vals);
+    if(minV===maxV){minV=Math.max(0,minV*0.85);maxV=maxV*1.15||1;}
+    const yS = v => isRank ? Pt+(v-minV)/(maxV-minV)*iH : Pt+(1-(v-minV)/(maxV-minV))*iH;
+    const xS = i => Pl+(points.length===1?iW/2:i/(points.length-1)*iW);
+    const pts=points.map((p,i)=>({...p,x:xS(i),y:yS(p.val)}));
+    const poly=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const cls=isRank?'chart-line-rank':'chart-line';
+    const dc=isRank?'chart-dot-rank':'chart-dot';
+    const dots=pts.map((p,i)=>{
+      const first=i===0,last=i===pts.length-1;
+      const anc=first?'start':last?'end':'middle';
+      const vStr=isRank?`#${p.val}`:`$${p.val}`;
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="${dc}"/>
+        ${(first||last)?`<text x="${p.x.toFixed(1)}" y="${(p.y-6).toFixed(1)}" text-anchor="${anc}" class="chart-val">${vStr}</text>`:''}
+        <text x="${p.x.toFixed(1)}" y="${(H-3).toFixed(1)}" text-anchor="${anc}" class="chart-label">${p.label}</text>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg"><polyline points="${poly}" class="${cls}"/>${dots}</svg>`;
+  };
+
+  let html='';
+  const pSvg=makeSvg(prices,false);
+  const rSvg=makeSvg(ranks,true);
+  if(pSvg) html+=`<div class="chart-wrap"><div class="chart-title">Price history</div>${pSvg}</div>`;
+  if(rSvg) html+=`<div class="chart-wrap"><div class="chart-title">Rank history <span style="font-size:9px;color:var(--tx3)">(lower = better)</span></div>${rSvg}</div>`;
+  return html;
+}
+
+// ── Fetch ─────────────────────────────────────────────────────────────────────
+async function fetchRange(rng) {
+  const url=BASE+encodeURIComponent(rng)+'?key='+KEY;
+  const r=await fetch(url);
+  if(!r.ok) throw new Error(`${rng}: HTTP ${r.status}`);
+  return (await r.json()).values||[];
+}
+
+async function loadAll() {
+  document.getElementById('cntlbl').textContent='Loading...';
+  document.getElementById('list').innerHTML='<div class="spin"><div class="spin-ring"></div>Fetching from Google Sheets...</div>';
+  document.getElementById('rfab').classList.add('spin');
+  try {
+    const [pR,h2,p1,oh2,op1,hsR,cR]=await Promise.all([
+      fetchRange("'Players All'!A2:O2000"),
+      fetchRange("'Top 200 Hitters Updated'!A2:H2000"),
+      fetchRange("'Top 100 Pitchers Updated'!A2:H2000"),
+      fetchRange("'200 Hitters Original'!A2:G2000"),
+      fetchRange("'100 Pitchers Original'!A2:G2000"),
+      fetchRange("'Hot Sheet'!A2:AE2000"),
+      fetch(`${TRACKER_BASE}${encodeURIComponent("'Card Cost Tracker Final'!A2:W2000")}?key=${KEY}`).then(r=>r.ok?r.json().then(d=>d.values||[]):[]),
+    ]);
+
+    // Players All: col0=Date,col1=Team,col2=Position,col3=Player,col4=Age,
+    // col5=Price,col6=MLB,col7=DD,col8=Roto,col9=StS,col10=BA,
+    // col11=HobbyRank,col12=BuyRating,col13=LastYear,col14=Change
+    players=pR.filter(r=>r[3]).map(r=>({
+      date:cl(r[0]),team:cl(r[1])||'',pos:cl(r[2])||'',name:cl(r[3])||'',
+      age:cl(r[4]),price:cl(r[5]),mlb:cl(r[6]),dd:cl(r[7]),roto:cl(r[8]),
+      sts:cl(r[9]),ba:cl(r[10]),hobby:cl(r[11]),buy:cl(r[12]),
+      lastYr:cl(r[13]),chg:cl(r[14])
+    }));
+
+    // Updated top lists: col0=Date,col1=Rank,col2=Player,col3=Team,col4=Age,col5=Prev,col6=Diff,col7=Price
+    top200=h2.filter(r=>r[2]).map(r=>({
+      date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',
+      age:cl(r[4]),prev:cl(r[5]),diff:cl(r[6]),price:cl(r[7])
+    }));
+    top100=p1.filter(r=>r[2]).map(r=>({
+      date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',
+      age:cl(r[4]),prev:cl(r[5]),diff:cl(r[6]),price:cl(r[7])
+    }));
+
+    // Original rankings: col0=Date,col1=Rank,col2=Player,col3=Team,col4=Age,col5=HobbyScore,col6=Price
+    origTop200=oh2.filter(r=>r[2]).map(r=>({
+      date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',price:cl(r[6])
+    }));
+    origTop100=op1.filter(r=>r[2]).map(r=>({
+      date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',price:cl(r[6])
+    }));
+
+    // Hot Sheet: col0=Date,col1=Week,col2=Position,col3=Level,col4=Name,col5=Age,col6=Aff
+    // col7-14=pitcher stats, col15-24=hitter stats
+    // col25=Auto(price),col26=14-Day,col27=HobbyRank,col28=RepeatOffender,col29=Category,col30=Notes
+    hotsheet=hsR.filter(r=>r[4]).map(r=>({
+      date:cl(r[0]),week:cl(r[1]),pos:cl(r[2]),level:cl(r[3]),
+      name:cl(r[4])||'',age:cl(r[5]),aff:cl(r[6]),
+      ip:cl(r[7]),hp:cl(r[8]),er:cl(r[9]),bbp:cl(r[10]),sop:cl(r[11]),
+      era:cl(r[12]),whip:cl(r[13]),k9:cl(r[14]),
+      b2:cl(r[15]),b3:cl(r[16]),hr:cl(r[17]),rbi:cl(r[18]),
+      bbh:cl(r[19]),soh:cl(r[20]),sb:cl(r[21]),
+      ba:cl(r[22]),obp:cl(r[23]),ops:cl(r[24]),
+      auto:cl(r[25]),day14:cl(r[26]),hobby:cl(r[27]),
+      repeat:cl(r[28])==='Yes',category:cl(r[29]),notes:cl(r[30])
+    }));
+
+    // Card Cost Tracker Final:
+    // col0=ItemID, col7=PlayerName, col10=PurchasePrice, col11=SalePrice,
+    // col12=SaleFees, col13=NetProfit, col15=DatePurchased, col16=TransactionDate,
+    // col17=PurchasedFrom, col19=DateSold, col22=FullCard
+    cards = cR.filter(r=>r[7]).map(r=>({
+      player:  (cl(r[7])||'').toLowerCase(),
+      fullCard: cl(r[22]) || [cl(r[2]),cl(r[3]),cl(r[4]),cl(r[7])].filter(Boolean).join(' '),
+      purchasePrice: cl(r[10]),
+      salePrice:     cl(r[11]),
+      saleFees:      cl(r[12]),
+      netProfit:     cl(r[13]),
+      datePurchased: cl(r[15]),
+      transactionDate: cl(r[16]),
+      purchasedFrom: cl(r[17]),
+      serialNo:      cl(r[8]),
+      daysOwned:     cl(r[20]),
+    }));
+
+    render();
+  } catch(e) {
+    document.getElementById('list').innerHTML=`<div class="err"><strong>Could not load data</strong><br>${e.message}<br><br>Make sure the sheet is shared as "Anyone with the link can view".</div>`;
+    document.getElementById('cntlbl').textContent='Error';
+  }
+  document.getElementById('rfab').classList.remove('spin');
+}
+
+// ── Card stats helper ─────────────────────────────────────────────────────────
+function getCardStats(name) {
+  const nameLower = name.toLowerCase();
+  const playerCards = cards.filter(c => c.player === nameLower);
+  const owned = playerCards.filter(c => !c.salePrice);
+  const sold  = playerCards.filter(c =>  c.salePrice);
+  const totalInvested = owned.reduce((s,c) => s + (parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0), 0);
+  const totalSoldFor  = sold.reduce((s,c)  => s + (parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0), 0);
+  const totalFees     = sold.reduce((s,c)  => s + (parseFloat(String(c.saleFees||'0').replace(/[^0-9.]/g,''))||0), 0);
+  const totalNetProfit= sold.reduce((s,c)  => s + (parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0), 0);
+  const daysOwned     = sold.filter(c=>c.daysOwned).map(c=>parseFloat(c.daysOwned)).filter(n=>!isNaN(n));
+  const avgHold       = daysOwned.length ? Math.round(daysOwned.reduce((a,b)=>a+b,0)/daysOwned.length) : null;
+  const bestFlip      = sold.reduce((best,c) => {
+    const p=parseFloat(c.netProfit)||0;
+    return (!best||p>parseFloat(best.netProfit||0)) ? c : best;
+  }, null);
+  return {owned, sold, totalInvested, totalSoldFor, totalFees, totalNetProfit, avgHold, bestFlip};
+}
+
+// ── Investment tier ───────────────────────────────────────────────────────────
+function invTier(amount) {
+  if(amount<=0) return null;
+  if(amount<=25) return 'inv1';
+  if(amount<=50) return 'inv2';
+  if(amount<=100) return 'inv3';
+  return 'inv4';
+}
+
+// ── Pool ──────────────────────────────────────────────────────────────────────
+function mostRecent(arr) {
+  const seen=new Map();
+  arr.forEach(r=>{
+    const ts=parseDate(r.date);
+    if(!seen.has(r.name)||ts>seen.get(r.name)._ts) seen.set(r.name,{...r,_ts:ts});
+  });
+  return [...seen.values()];
+}
+
+function getPool() {
+  if(tab==='t200') return mostRecent(top200).filter(r=>matchQ(r.name,r.team)).sort((a,b)=>parseInt(a.rank)-parseInt(b.rank));
+  if(tab==='t100') return mostRecent(top100).filter(r=>matchQ(r.name,r.team)).sort((a,b)=>parseInt(a.rank)-parseInt(b.rank));
+  if(tab==='hs')   return mostRecent(hotsheet).filter(r=>matchQ(r.name,r.aff)).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
+  if(tab==='port') return []; // handled separately in render()
+
+  let pool=[...players];
+  if(brf==='5') pool=pool.filter(p=>parseInt(p.buy)===5);
+  else if(brf==='4') pool=pool.filter(p=>parseInt(p.buy)>=4);
+  else if(brf==='owned') pool=pool.filter(p=>cards.some(c=>c.player===p.name.toLowerCase()&&!c.salePrice));
+  else if(brf==='sold')  pool=pool.filter(p=>cards.some(c=>c.player===p.name.toLowerCase()&&c.salePrice));
+  if(posf==='hit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('hitter'));
+  else if(posf==='pit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('pitcher'));
+  pool=pool.filter(p=>matchQ(p.name,p.team));
+  pool.sort((a,b)=>{
+    const ab=parseInt(a.buy)||0,bb=parseInt(b.buy)||0;
+    if(ab!==bb) return bb-ab;
+    return (parseFloat(b.price)||0)-(parseFloat(a.price)||0);
+  });
+  return pool;
+}
+
+// ── Card builder ──────────────────────────────────────────────────────────────
+function buildCard(name, team, pos, i, tp, overrides={}) {
+  const d=resolvePlayerData(name);
+  const rank   = overrides.rank  ?? d.rank;
+  const price  = overrides.price ?? d.price;
+  const buy    = d.buy;
+  const hsLabel= d.hsLabel;
+  const isRepeat  = hsLabel&&hsLabel.toLowerCase().includes('repeat');
+  const isSleeper = hsLabel&&hsLabel.toLowerCase().includes('sleeper');
+
+  const rankHtml = rank
+    ? `<div class="rnum">#${rank}</div>`
+    : `<div class="rnum empty">—</div>`;
+
+  const priceStr = price?(String(price).startsWith('$')?price:'$'+price):'';
+  const priceHtml = priceStr
+    ? `<div class="pbox">${priceStr}</div>`
+    : `<div class="pbox empty">—</div>`;
+
+  let labelHtml='';
+  if(hsLabel) {
+    const cls=isRepeat?'repeat':isSleeper?'sleeper':'';
+    labelHtml=`<span class="hs-label${cls?' '+cls:''}">${hsLabel}</span>`;
+  }
+
+  // Hot sheet week badges — only shown on the Hot Sheet tab
+  const hsWeeks = tab==='hs' ? hotsheet.filter(h=>h.name===name) : [];
+  let wkHtml='';
+  if(hsWeeks.length) {
+    const weeks=[...new Set(hsWeeks.map(h=>h.week).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
+    wkHtml = weeks.map(w=>`<span class="wk-badge">Wk${w}</span>`).join('');
+  }
+
+  // Inventory badges
+  const cs = getCardStats(name);
+  let invHtml='';
+  if(cs.owned.length>0) {
+    const tier = invTier(cs.totalInvested);
+    invHtml += `<span class="inv-badge ${tier}">${cs.owned.length} owned · $${cs.totalInvested.toFixed(0)}</span>`;
+  }
+  if(cs.sold.length>0) {
+    invHtml += `<span class="sold-badge">${cs.sold.length} sold</span>`;
+  }
+
+  return `<div class="card${isRepeat?' repeat':''}" data-i="${i}" data-tp="${tp}">
+    ${rankHtml}
+    <div class="cbody">
+      <div class="r1"><span class="pname">${name}</span></div>
+      <div class="r2">
+        <span>${team||''}</span><span>${pos||''}</span>
+        ${labelHtml}
+        ${buy?badge(buy):''}
+        ${wkHtml}
+        ${invHtml}
+      </div>
+    </div>
+    ${priceHtml}
+  </div>`;
+}
+
+// ── Portfolio renderer ────────────────────────────────────────────────────────
+function renderPortfolio() {
+  const fmtMoney = v => { const n=parseFloat(v); return isNaN(n)?'—':`$${n.toFixed(2)}`; };
+
+  // All prospect names (lowercase) from all sheets
+  const prospectNames = new Set([
+    ...players.map(p=>p.name.toLowerCase()),
+    ...top200.map(p=>p.name.toLowerCase()),
+    ...top100.map(p=>p.name.toLowerCase()),
+    ...origTop200.map(p=>p.name.toLowerCase()),
+    ...origTop100.map(p=>p.name.toLowerCase()),
+    ...hotsheet.map(p=>p.name.toLowerCase()),
+  ]);
+
+  // Only cards matching a prospect
+  const prospectCards = cards.filter(c => prospectNames.has(c.player));
+  const allOwned = prospectCards.filter(c=>!c.salePrice);
+  const allSold  = prospectCards.filter(c=> c.salePrice);
+  const totalInvested   = allOwned.reduce((s,c)=>s+(parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0),0);
+  const totalNetProfit  = allSold.reduce((s,c)=>s+(parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0),0);
+  const totalSoldFor    = allSold.reduce((s,c)=>s+(parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0),0);
+
+  // Group ALL prospect cards by player (owned + sold), sort by total invested desc
+  const byPlayer = new Map();
+  prospectCards.forEach(c=>{
+    const k=c.player;
+    if(!byPlayer.has(k)) byPlayer.set(k,{name:c.player,ownedCards:[],soldCards:[],totalInvested:0,totalSoldFor:0,totalNet:0});
+    const entry=byPlayer.get(k);
+    if(!c.salePrice) {
+      entry.ownedCards.push(c);
+      entry.totalInvested += parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0;
+    } else {
+      entry.soldCards.push(c);
+      entry.totalSoldFor += parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0;
+      entry.totalNet += parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0;
+    }
+  });
+  const playerList=[...byPlayer.values()].sort((a,b)=>b.totalInvested-a.totalInvested);
+
+  const summaryHtml=`
+    <div class="srow" style="margin-bottom:11px"><div class="srow-t">Portfolio summary</div><div class="s3">
+      <div><div class="sc-l">Cards owned</div><div class="sc-v">${allOwned.length}</div></div>
+      <div><div class="sc-l">Total invested</div><div class="sc-v">$${totalInvested.toFixed(0)}</div></div>
+      <div><div class="sc-l">Cards sold</div><div class="sc-v">${allSold.length}</div></div>
+    </div></div>
+    <div class="srow" style="margin-bottom:11px"><div class="srow-t">Sales performance</div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center">
+      <div><div class="sc-l">Sold for</div><div class="sc-v">$${totalSoldFor.toFixed(0)}</div></div>
+      <div><div class="sc-l">Net profit</div><div class="sc-v"><span class="${(totalSoldFor-totalInvested)>=0?'up':'dn'}">${(totalSoldFor-totalInvested)>=0?'+':''}$${(totalSoldFor-totalInvested).toFixed(2)}</span></div></div>
+      <div><div class="sc-l">ROI</div><div class="sc-v">${totalInvested>0?`<span class="${(totalSoldFor-totalInvested)>=0?'up':'dn'}">${(totalSoldFor-totalInvested)>=0?'+':''}${(((totalSoldFor-totalInvested)/totalInvested)*100).toFixed(1)}%</span>`:'—'}</div></div>
+      <div><div class="sc-l">ROI on sold</div><div class="sc-v">${allSold.length>0&&(totalSoldFor-totalNetProfit)>0?`<span class="${totalNetProfit>=0?'up':'dn'}">${totalNetProfit>=0?'+':''}${((totalNetProfit/(totalSoldFor-totalNetProfit))*100).toFixed(1)}%</span>`:'—'}</div></div>
+    </div></div>`;
+
+  const holdingsHtml = playerList.length ? `
+    <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">All player cards</div>
+    ${playerList.map(entry=>{
+      const ownedTier = entry.totalInvested>0 ? invTier(entry.totalInvested) : null;
+      const prospectName = players.find(p=>p.name.toLowerCase()===entry.name)?.name ||
+        entry.name.replace(/\b\w/g,l=>l.toUpperCase());
+      const ownedBadge = entry.ownedCards.length>0
+        ? `<span class="inv-badge ${ownedTier}">${entry.ownedCards.length} owned · $${entry.totalInvested.toFixed(0)}</span>`
+        : '';
+      const soldBadge = entry.soldCards.length>0
+        ? `<span class="sold-badge" style="margin-left:4px">${entry.soldCards.length} sold · <span class="${entry.totalNet>=0?'up':'dn'}">${entry.totalNet>=0?'+':''}$${entry.totalNet.toFixed(2)}</span></span>`
+        : '';
+      return `<div class="ct-entry${entry.ownedCards.length>0?' owned':''}" style="cursor:pointer" onclick="openPlayerFromPortfolio('${entry.name}')">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:14px;font-weight:500;flex:1">${prospectName}</span>
+          ${ownedBadge}${soldBadge}
+        </div>
+        ${entry.ownedCards.length>0?`<div class="ct-row" style="margin-top:6px">
+          ${entry.ownedCards.map(c=>`<div class="ct-stat"><div class="ct-l">${(c.fullCard||'').split(' ').slice(0,3).join(' ')}</div><div class="ct-v">$${(parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0).toFixed(2)}</div></div>`).join('')}
+        </div>`:''}
+      </div>`;
+    }).join('')}` : '<div class="empty-msg" style="padding:20px 0">No prospect cards found</div>';
+
+  document.getElementById('list').innerHTML = summaryHtml + holdingsHtml;
+  document.getElementById('cntlbl').textContent = `${playerList.length} player${playerList.length===1?'':'s'}`;
+}
+
+function openPlayerFromPortfolio(nameLower) {
+  const p = players.find(pl=>pl.name.toLowerCase()===nameLower);
+  if(p) { showDetail(p,'player'); return; }
+  // fallback: build minimal object from card data
+  const c = cards.find(cd=>cd.player===nameLower);
+  if(c) showDetail({name:c.player.replace(/\b\w/g,l=>l.toUpperCase()),team:'',pos:'',aff:''},'player');
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const isTop=tab==='t200'||tab==='t100';
+  const isHS=tab==='hs';
+  const isPort=tab==='port';
+  const showChips=!isTop&&!isHS&&!isPort;
+  document.getElementById('chips').style.display=showChips?'flex':'none';
+  document.getElementById('chips2').style.display=showChips?'flex':'none';
+
+  if(isPort) { renderPortfolio(); return; }
+
+  const pool=getPool();
+  document.getElementById('cntlbl').textContent=`${pool.length} player${pool.length===1?'':'s'}`;
+
+  if(!pool.length){
+    document.getElementById('list').innerHTML='<div class="empty-msg">No players match</div>';
+    return;
+  }
+
+  let html='';
+  if(isHS) {
+    html=pool.map((r,i)=>buildCard(r.name,r.aff,r.pos,i,'hs')).join('');
+  } else if(isTop) {
+    html=pool.map((r,i)=>buildCard(r.name,r.team,tab==='t200'?'Hitter':'Pitcher',i,'top',{rank:r.rank,price:r.price})).join('');
+  } else {
+    html=pool.map((p,i)=>buildCard(p.name,p.team,p.pos,i,'player')).join('');
+  }
+
+  document.getElementById('list').innerHTML=html;
+  document.querySelectorAll('#list .card').forEach(c=>{
+    c.addEventListener('click',()=>showDetail(pool[+c.dataset.i],c.dataset.tp));
+  });
+}
+
+// ── Hot sheet stat rows ───────────────────────────────────────────────────────
+function hsStatRows(hist) {
+  if(!hist.length) return '';
+  return `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">Hot sheet history</div>
+    ${hist.map(h=>{
+      const isPit=h.pos==='Pitcher';
+      const stats=isPit
+        ?`<div><div class="hs-sl">IP</div><div class="hs-sv">${fmt(h.ip)}</div></div>
+          <div><div class="hs-sl">ERA</div><div class="hs-sv">${fmt(h.era)}</div></div>
+          <div><div class="hs-sl">WHIP</div><div class="hs-sv">${fmt(h.whip)}</div></div>
+          <div><div class="hs-sl">K/9</div><div class="hs-sv">${fmt(h.k9)}</div></div>
+          <div><div class="hs-sl">SO</div><div class="hs-sv">${fmt(h.sop)}</div></div>
+          <div><div class="hs-sl">BB</div><div class="hs-sv">${fmt(h.bbp)}</div></div>`
+        :`<div><div class="hs-sl">OPS</div><div class="hs-sv">${fmt(h.ops)}</div></div>
+          <div><div class="hs-sl">BA</div><div class="hs-sv">${fmt(h.ba)}</div></div>
+          <div><div class="hs-sl">HR</div><div class="hs-sv">${fmt(h.hr)}</div></div>
+          <div><div class="hs-sl">RBI</div><div class="hs-sv">${fmt(h.rbi)}</div></div>
+          <div><div class="hs-sl">SB</div><div class="hs-sv">${fmt(h.sb)}</div></div>
+          <div><div class="hs-sl">OBP</div><div class="hs-sv">${fmt(h.obp)}</div></div>`;
+      return `<div class="hs-entry${h.repeat?' repeat':''}">
+        <div class="hs-hdr">
+          <span class="hs-wk">${fmtDateLabel(h.date)||'Wk '+h.week}</span>
+          <span class="hs-lvl">${h.level}</span>
+          ${h.category?`<span class="hs-cat">${h.category}</span>`:''}
+          ${h.auto?`<span style="margin-left:auto;font-size:12px;font-weight:500">${h.auto}</span>`:''}
+        </div>
+        <div class="hs-stats">${stats}</div>
+        ${h.notes?`<div class="hs-notes">${h.notes}</div>`:''}
+      </div>`;
+    }).join('')}`;
+}
+
+// ── Card tracker section ──────────────────────────────────────────────────────
+function buildCardsHtml(name) {
+  const nameLower = name.toLowerCase();
+  const playerCards = cards.filter(c => c.player === nameLower);
+  if(!playerCards.length) return '';
+
+  const owned = playerCards.filter(c => !c.salePrice);
+  const sold  = playerCards.filter(c =>  c.salePrice);
+
+  const fmtDate = v => {
+    if(!v) return '—';
+    const d = new Date(v);
+    if(isNaN(d)) return v;
+    return `${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`;
+  };
+  const fmtMoney = v => {
+    if(!v) return '—';
+    const n = parseFloat(String(v).replace(/[^0-9.]/g,''));
+    return isNaN(n) ? '—' : `$${n.toFixed(2)}`;
+  };
+
+  const cs = getCardStats(name);
+
+  // P&L summary row
+  const totalInvestedOwned = cs.totalInvested;
+  const summaryHtml = `<div class="srow" style="margin-bottom:9px"><div class="srow-t">Cards summary</div><div class="s3">
+    <div><div class="sc-l">Owned</div><div class="sc-v">${owned.length}</div></div>
+    <div><div class="sc-l">Invested</div><div class="sc-v">$${totalInvestedOwned.toFixed(0)}</div></div>
+    <div><div class="sc-l">Sold</div><div class="sc-v">${sold.length}</div></div>
+    ${cs.totalNetProfit!==0?`<div><div class="sc-l">Net profit</div><div class="sc-v"><span class="${cs.totalNetProfit>=0?'up':'dn'}">${cs.totalNetProfit>=0?'+':''}$${Math.abs(cs.totalNetProfit).toFixed(2)}</span></div></div>`:''}
+    ${cs.avgHold!==null?`<div><div class="sc-l">Avg hold</div><div class="sc-v">${cs.avgHold}d</div></div>`:''}
+  </div></div>`;
+
+  // Best flip
+  let bestFlipHtml='';
+  if(cs.bestFlip && parseFloat(cs.bestFlip.netProfit||0)>0) {
+    const bf=cs.bestFlip;
+    bestFlipHtml=`<div class="srow" style="margin-bottom:9px"><div class="srow-t">Best flip</div>
+      <div style="font-size:12px;color:var(--tx2);margin-bottom:4px">${bf.fullCard||'—'}</div>
+      <div class="s3">
+        <div><div class="sc-l">Cost</div><div class="sc-v">${fmtMoney(bf.purchasePrice)}</div></div>
+        <div><div class="sc-l">Sold</div><div class="sc-v">${fmtMoney(bf.salePrice)}</div></div>
+        <div><div class="sc-l">Net</div><div class="sc-v"><span class="up">+$${parseFloat(bf.netProfit).toFixed(2)}</span></div></div>
+      </div>
+    </div>`;
+  }
+
+  const renderEntry = (c, isOwned) => {
+    const date = isOwned ? fmtDate(c.datePurchased||c.transactionDate) : fmtDate(c.transactionDate);
+    const serialStr = c.serialNo ? `<div class="ct-serial">/${c.serialNo}</div>` : '';
+    if(isOwned) {
+      return `<div class="ct-entry owned">
+        <div class="ct-name">${c.fullCard||'—'}</div>
+        <div class="ct-row">
+          <div class="ct-stat"><div class="ct-l">Purchased</div><div class="ct-v">${date}</div></div>
+          <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
+        </div>
+        ${serialStr}
+      </div>`;
+    } else {
+      const profit = c.netProfit ? parseFloat(c.netProfit) : null;
+      const profitCls = profit !== null ? (profit >= 0 ? 'up' : 'dn') : '';
+      const profitStr = profit !== null ? `<span class="${profitCls}">${profit >= 0 ? '+' : ''}$${Math.abs(profit).toFixed(2)}</span>` : '—';
+      return `<div class="ct-entry sold">
+        <div class="ct-name">${c.fullCard||'—'}</div>
+        <div class="ct-row">
+          <div class="ct-stat"><div class="ct-l">Sold</div><div class="ct-v">${date}</div></div>
+          <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
+          <div class="ct-stat"><div class="ct-l">Sold for</div><div class="ct-v">${fmtMoney(c.salePrice)}</div></div>
+          <div class="ct-stat"><div class="ct-l">Net</div><div class="ct-v">${profitStr}</div></div>
+        </div>
+        ${serialStr}
+      </div>`;
+    }
+  };
+
+  let html = `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">My cards</div>`;
+  html += summaryHtml + bestFlipHtml;
+  if(owned.length) {
+    html += `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">Owned (${owned.length})</div>`;
+    html += owned.map(c => renderEntry(c, true)).join('');
+  }
+  if(sold.length) {
+    html += `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin:${owned.length?'12px':0} 0 8px">Sold (${sold.length})</div>`;
+    html += sold.map(c => renderEntry(c, false)).join('');
+  }
+  return html;
+}
+
+// ── Detail modal ──────────────────────────────────────────────────────────────
+function showDetail(p, tp) {
+  // Resolve the canonical player record from Players All (for buy sheet data)
+  const master = players.find(b=>b.name===p.name);
+  const resolved = resolvePlayerData(p.name);
+  const hist = hotsheet.filter(h=>h.name===p.name).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
+
+  // Current resolved price & rank
+  const currentPrice = resolved.price?(String(resolved.price).startsWith('$')?resolved.price:'$'+resolved.price):'—';
+  const currentRank  = resolved.rank ? '#'+resolved.rank : '—';
+
+  // Top list entry for this player (most recent)
+  const topEntry = [...mostRecent(top200),...mostRecent(top100)].find(e=>e.name===p.name);
+
+  // Hot sheet weeks
+  const hsWeeks = [...new Set(hist.map(h=>h.week).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
+  const wksHtml = hsWeeks.length
+    ? `<div style="margin-bottom:9px">${hsWeeks.map(w=>`<span class="wk-badge">Wk${w}</span>`).join('')}</div>`
+    : '';
+
+  const html=`<div class="mname">${p.name}</div>
+    <div class="msub">${master?master.team:p.team||p.aff||''} · ${master?master.pos:p.pos||''}${master&&master.buy?' · Buy Rating '+master.buy:''}</div>
+
+    <div class="sgrid">
+      <div class="scard"><div class="slbl">Rank</div><div class="sval">${currentRank}</div></div>
+      <div class="scard"><div class="slbl">Price</div><div class="sval">${currentPrice}</div></div>
+      <div class="scard"><div class="slbl">Age</div><div class="sval">${fmt(master?master.age:p.age)}</div></div>
+      <div class="scard"><div class="slbl">Buy Rating</div><div class="sval">${fmt(master?master.buy:null)}</div></div>
+    </div>
+
+    ${master?`<div class="srow"><div class="srow-t">Source ranks</div><div class="s3">
+      <div><div class="sc-l">MLB</div><div class="sc-v">${fmt(master.mlb)}</div></div>
+      <div><div class="sc-l">DD</div><div class="sc-v">${fmt(master.dd)}</div></div>
+      <div><div class="sc-l">Roto</div><div class="sc-v">${fmt(master.roto)}</div></div>
+      <div><div class="sc-l">StS</div><div class="sc-v">${fmt(master.sts)}</div></div>
+      <div><div class="sc-l">BA</div><div class="sc-v">${fmt(master.ba)}</div></div>
+      <div><div class="sc-l">Hobby</div><div class="sc-v">${fmt(master.hobby)}</div></div>
+    </div></div>`:''}
+
+    ${topEntry?`<div class="srow"><div class="srow-t">Latest ranking</div><div class="s3">
+      <div><div class="sc-l">Rank</div><div class="sc-v">#${topEntry.rank}</div></div>
+      <div><div class="sc-l">Prev</div><div class="sc-v">${fmt(topEntry.prev)}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtDiff(topEntry.diff)}</div></div>
+    </div></div>`:''}
+
+    ${master&&master.lastYr?`<div class="srow"><div class="srow-t">Year over year</div><div class="s3">
+      <div><div class="sc-l">Last year</div><div class="sc-v">$${master.lastYr}</div></div>
+      <div><div class="sc-l">Now</div><div class="sc-v">${fmtP(master.price)}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(master.chg)}</div></div>
+    </div></div>`:''}
+
+    ${resolved.priceChange?`<div class="srow"><div class="srow-t">Price movement</div><div class="s3">
+      <div><div class="sc-l">Original</div><div class="sc-v">$${resolved.priceChange.orig.replace(/[^0-9.]/g,'')}</div></div>
+      <div><div class="sc-l">Current</div><div class="sc-v">$${resolved.priceChange.now.replace(/[^0-9.]/g,'')}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(resolved.priceChange.pct)}</div></div>
+    </div></div>`:''}
+
+    ${buildHistoryCharts(p.name)}
+    ${wksHtml}
+    ${hsStatRows(hist)}
+    ${buildCardsHtml(p.name)}`;
+
+  document.getElementById('mcontent').innerHTML=html;
+  document.getElementById('mwrap').classList.add('on');
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); tab=t.dataset.t; window.scrollTo(0,0); render();
+});
+document.getElementById('chips').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  document.querySelectorAll('#chips .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); brf=c.dataset.f; render();
+});
+document.getElementById('chips2').addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  document.querySelectorAll('#chips2 .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); posf=c.dataset.p; render();
+});
+document.getElementById('search').addEventListener('input',e=>{
+  q=e.target.value.trim();
+  document.getElementById('clear').classList.toggle('on',q.length>0);
+  render();
+});
+document.getElementById('clear').addEventListener('click',()=>{
+  document.getElementById('search').value=''; q='';
+  document.getElementById('clear').classList.remove('on'); render();
+});
+document.getElementById('closebtn').addEventListener('click',()=>document.getElementById('mwrap').classList.remove('on'));
+document.getElementById('mwrap').addEventListener('click',e=>{ if(e.target===document.getElementById('mwrap')) document.getElementById('mwrap').classList.remove('on'); });
+document.getElementById('rfab').addEventListener('click',loadAll);
+
+loadAll();
+</script>
+</body>
+</html>
