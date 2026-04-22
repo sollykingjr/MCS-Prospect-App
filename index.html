@@ -19,7 +19,8 @@
   --b2-bg:#F1EFE8;--b2-tx:#5F5E5A;
   --up:#27500A;--dn:#791F1F;
   --sl-bg:#CCFBF1;--sl-tx:#0F766E;
-  /* Investment tiers */
+  --pit-bg:#FEF3C7;--pit-tx:#92400E;
+  --str-bg:#FEF3C7;--str-tx:#92400E;
   --inv1-bg:#DBEAFE;--inv1-tx:#1e40af;
   --inv2-bg:#BFDBFE;--inv2-tx:#1d4ed8;
   --inv3-bg:#3B82F6;--inv3-tx:#fff;
@@ -36,6 +37,8 @@
     --b2-bg:#2C2C2A;--b2-tx:#B4B2A9;
     --up:#97C459;--dn:#F09595;
     --sl-bg:#0d3330;--sl-tx:#5EEAD4;
+    --pit-bg:#451a03;--pit-tx:#FCD34D;
+    --str-bg:#451a03;--str-tx:#FCD34D;
     --inv1-bg:#1e3a5f;--inv1-tx:#93C5FD;
     --inv2-bg:#1e3a8a;--inv2-tx:#BFDBFE;
     --inv3-bg:#1d4ed8;--inv3-tx:#fff;
@@ -65,17 +68,12 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .schip{flex-shrink:0;padding:3px 8px;border:.5px solid var(--bdr2);border-radius:20px;background:transparent;color:var(--tx3);font-size:10px;font-weight:500;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0}
 .schip.on{background:var(--acc-bg);color:var(--acc);border-color:var(--acc)}
 .list{padding:0 10px 50px}
-/* Card: [rank box] [body] [price box] */
 .card{background:var(--surf);border:.5px solid var(--bdr);border-radius:10px;padding:9px 10px;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:8px}
 .card:active{opacity:.65}
-.card.repeat{border-left:3px solid var(--acc)}
 .card.recent-hs{border-left:3px solid var(--acc)}
 .rnum{flex-shrink:0;width:40px;height:40px;border-radius:8px;background:var(--acc-bg);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;text-align:center;line-height:1.1}
-.rnum.pitcher{background:#FEF3C7;color:#92400E}
+.rnum.pitcher{background:var(--pit-bg);color:var(--pit-tx)}
 .rnum.empty{background:var(--b2-bg);color:var(--tx3);font-size:10px}
-@media(prefers-color-scheme:dark){
-  .rnum.pitcher{background:#451a03;color:#FCD34D}
-}
 .pbox{flex-shrink:0;min-width:46px;height:40px;border-radius:8px;background:var(--b2-bg);color:var(--tx);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;padding:0 7px;white-space:nowrap}
 .pbox.empty{background:transparent;border:.5px solid var(--bdr);color:var(--tx3)}
 .cbody{flex:1;min-width:0}
@@ -88,8 +86,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .hs-label.repeat{background:var(--b5-bg);color:var(--b5-tx)}
 .hs-label.sleeper{background:var(--sl-bg);color:var(--sl-tx)}
 .wk-badge{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:500;background:var(--acc-bg);color:var(--acc);margin-right:3px}
-.wk-badge.streak{background:#FEF3C7;color:#92400E}
-@media(prefers-color-scheme:dark){.wk-badge.streak{background:#451a03;color:#FCD34D}}
+.wk-badge.streak{background:var(--str-bg);color:var(--str-tx)}
 .inv-badge{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;margin-right:3px}
 .inv1{background:var(--inv1-bg);color:var(--inv1-tx)}
 .inv2{background:var(--inv2-bg);color:var(--inv2-tx)}
@@ -130,14 +127,28 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .hs-sl{font-size:10px;color:var(--tx3)}.hs-sv{font-size:13px;font-weight:500}
 .hs-notes{font-size:12px;line-height:1.6;color:var(--tx2);border-top:.5px solid var(--bdr);padding-top:8px;margin-top:4px}
 .close-btn{width:100%;height:44px;border:.5px solid var(--bdr2);background:var(--surf);color:var(--tx);border-radius:10px;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;margin-top:8px}
+.notes-toggle{width:100%;padding:10px 12px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:inherit}
+.notes-toggle span.lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+.notes-toggle span.arr{font-size:10px;color:var(--tx3)}
+.notes-body{display:none;padding:0 12px 10px}
+.notes-body p{font-size:13px;line-height:1.65;margin:0;color:var(--tx)}
+.section-hdr{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px}
+.recent-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--bdr)}
+.recent-row:last-child{border-bottom:none}
+.recent-info{flex:1;min-width:0}
+.recent-info .rc-name{font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-info .rc-date{font-size:11px;color:var(--tx3)}
+.recent-price{font-size:13px;font-weight:600;flex-shrink:0}
+.recent-sale{text-align:right;flex-shrink:0}
+.recent-sale .rs-price{font-size:13px;font-weight:600}
+.recent-sale .rs-net{font-size:11px}
 /* Charts */
 .chart-wrap{background:var(--surf);border:.5px solid var(--bdr);border-radius:8px;padding:10px 12px;margin-bottom:9px}
 .chart-title{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px}
 .chart-svg{width:100%;overflow:visible}
 .chart-line{fill:none;stroke:var(--acc);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .chart-line-rank{fill:none;stroke:var(--b3-tx);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.chart-dot{fill:var(--acc)}
-.chart-dot-rank{fill:var(--b3-tx)}
+.chart-dot{fill:var(--acc)}.chart-dot-rank{fill:var(--b3-tx)}
 .chart-label{font-size:9px;fill:var(--tx3);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .chart-val{font-size:10px;fill:var(--tx);font-weight:500;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 /* Card tracker */
@@ -149,6 +160,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .ct-stat{text-align:left}
 .ct-l{font-size:10px;color:var(--tx3)}.ct-v{font-size:13px;font-weight:500;margin-top:1px}
 .ct-serial{font-size:10px;color:var(--tx3);margin-top:4px}
+.port-player{cursor:pointer}
 </style>
 </head>
 <body>
@@ -197,198 +209,182 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 </div>
 
 <script>
-const SID = '15pRN3ILeyfbPG2OMRxh0OUtqg6MZCaLMMjwf4yxDV74';
+// ── Constants ─────────────────────────────────────────────────────────────────
+const SID         = '15pRN3ILeyfbPG2OMRxh0OUtqg6MZCaLMMjwf4yxDV74';
 const TRACKER_SID = '12sNofzPwhb8uR68hT_bJNiLD2MrM0rdoQMPXGTlx2_s';
-const KEY = 'AIzaSyCl43LqZrRJ-MlPkKiKjk51O2Aklv-T0RE';
-const BASE = `https://sheets.googleapis.com/v4/spreadsheets/${SID}/values/`;
-const TRACKER_BASE = `https://sheets.googleapis.com/v4/spreadsheets/${TRACKER_SID}/values/`;
+const KEY         = 'AIzaSyCl43LqZrRJ-MlPkKiKjk51O2Aklv-T0RE';
+const BASE        = `https://sheets.googleapis.com/v4/spreadsheets/${SID}/values/`;
+const TRACKER_BASE= `https://sheets.googleapis.com/v4/spreadsheets/${TRACKER_SID}/values/`;
 
+const TEAM_NAMES = {
+  ARI:'Arizona Diamondbacks',ATL:'Atlanta Braves',BAL:'Baltimore Orioles',
+  BOS:'Boston Red Sox',CHC:'Chicago Cubs',CHW:'Chicago White Sox',
+  CIN:'Cincinnati Reds',CLE:'Cleveland Guardians',COL:'Colorado Rockies',
+  DET:'Detroit Tigers',HOU:'Houston Astros',KC:'Kansas City Royals',
+  LAA:'Los Angeles Angels',LAD:'Los Angeles Dodgers',MIA:'Miami Marlins',
+  MIL:'Milwaukee Brewers',MIN:'Minnesota Twins',NYM:'New York Mets',
+  NYY:'New York Yankees',OAK:'Oakland Athletics',PHI:'Philadelphia Phillies',
+  PIT:'Pittsburgh Pirates',SD:'San Diego Padres',SEA:'Seattle Mariners',
+  SF:'San Francisco Giants',STL:'St. Louis Cardinals',TB:'Tampa Bay Rays',
+  TEX:'Texas Rangers',TOR:'Toronto Blue Jays',WSN:'Washington Nationals',
+  SFG:'San Francisco Giants',SDP:'San Diego Padres',TBR:'Tampa Bay Rays',WSH:'Washington Nationals'
+};
+
+const SORT_OPTS = {
+  all:  [{k:'default',l:'BR'},{k:'rank',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  t200: [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  t100: [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  hs:   [{k:'default',l:'Recent'},{k:'weeks',l:'Weeks'},{k:'streak',l:'Streak'},{k:'name',l:'Name'},{k:'owned',l:'$ Owned'}],
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
 let players=[], top200=[], top100=[], origTop200=[], origTop100=[], hotsheet=[], cards=[];
 let tab='all', brf='all', posf='all', q='', sortBy='default';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-const cl = v => (!v||String(v).trim()===''||v==='-'||v==='—'||v==='\\-') ? null : String(v).trim();
-const fmt = v => cl(v) ?? '—';
-const fmtP = v => { const c=cl(v); return c?(c.startsWith('$')?c:'$'+c):'—'; };
-const fmtDiff = v => {
+// Global cache — built once after load, cleared on refresh
+let CACHE = null;
+
+// ── Pure helpers ──────────────────────────────────────────────────────────────
+const cl      = v => (!v||String(v).trim()===''||v==='-'||v==='—'||v==='\\-') ? null : String(v).trim();
+const fmt     = v => cl(v) ?? '—';
+const fmtP    = v => { const c=cl(v); return c?(c.startsWith('$')?c:'$'+c):'—'; };
+const normName= v => (v||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const parseDate=v => { if(!v) return 0; const d=new Date(v); return isNaN(d)?0:d.getTime(); };
+const fmtDateLabel=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?'':  `${d.getMonth()+1}/${d.getDate()}`; };
+const fmtShortDate=v=>{ if(!v) return '—'; const d=new Date(v); return isNaN(d)?v:`${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`; };
+const safeNum =(v,neg=false)=>parseFloat(String(v||'0').replace(neg?/[^0-9.-]/g:/[^0-9.]/g,''))||0;
+const fmtMoney=v=>{ const n=safeNum(v); return n===0&&!v?'—':`$${n.toFixed(2)}`; };
+
+const fmtDiff=v=>{
   if(!cl(v)) return '—';
   const n=parseFloat(v); if(isNaN(n)) return '—';
   return `<span class="${n>0?'up':'dn'}">${n>0?'+':''}${n}</span>`;
 };
-const fmtPct = v => {
+const fmtPct=v=>{
   if(!cl(v)) return '—';
   const n=parseFloat(String(v).replace('%',''));
   if(isNaN(n)) return String(v);
   return `<span class="${n>0?'up':n<0?'dn':''}">${n>0?'+':''}${n.toFixed(1)}%</span>`;
 };
-const badge = br => {
+const badge=br=>{
   if(!br) return '';
   const n=parseInt(br); if(isNaN(n)) return '';
-  const c=n>=5?'b5':n===4?'b4':n===3?'b3':'b2';
-  return `<span class="badge ${c}">BR ${n}</span>`;
+  return `<span class="badge ${{5:'b5',4:'b4',3:'b3'}[n]||'b2'}">BR ${n}</span>`;
 };
-const matchQ = (name,team) => {
+const matchQ=(name,team)=>{
   if(!q) return true;
   const t=q.toLowerCase();
-  if((name||'').toLowerCase().includes(t)) return true;
-  if((team||'').toLowerCase().includes(t)) return true;
-  // Full team name lookup
-  const fullName = (TEAM_NAMES[team||'']||'').toLowerCase();
-  return fullName.includes(t);
+  return (name||'').toLowerCase().includes(t)||
+         (team||'').toLowerCase().includes(t)||
+         (TEAM_NAMES[team||'']||'').toLowerCase().includes(t);
+};
+const invTier=amt=>{
+  if(amt<=0) return null;
+  if(amt<=25) return 'inv1'; if(amt<=50) return 'inv2';
+  if(amt<=100) return 'inv3'; return 'inv4';
 };
 
-const TEAM_NAMES = {
-  'ARI':'Arizona Diamondbacks','ATL':'Atlanta Braves','BAL':'Baltimore Orioles',
-  'BOS':'Boston Red Sox','CHC':'Chicago Cubs','CHW':'Chicago White Sox',
-  'CIN':'Cincinnati Reds','CLE':'Cleveland Guardians','COL':'Colorado Rockies',
-  'DET':'Detroit Tigers','HOU':'Houston Astros','KC':'Kansas City Royals',
-  'LAA':'Los Angeles Angels','LAD':'Los Angeles Dodgers','MIA':'Miami Marlins',
-  'MIL':'Milwaukee Brewers','MIN':'Minnesota Twins','NYM':'New York Mets',
-  'NYY':'New York Yankees','OAK':'Oakland Athletics','PHI':'Philadelphia Phillies',
-  'PIT':'Pittsburgh Pirates','SD':'San Diego Padres','SEA':'Seattle Mariners',
-  'SF':'San Francisco Giants','STL':'St. Louis Cardinals','TB':'Tampa Bay Rays',
-  'TEX':'Texas Rangers','TOR':'Toronto Blue Jays','WSN':'Washington Nationals',
-  'SFG':'San Francisco Giants','SDP':'San Diego Padres','TBR':'Tampa Bay Rays',
-  'WSH':'Washington Nationals'
-};
-// Case-insensitive, accent-insensitive name matching helper
-const normName = v => (v||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const parseDate = v => {
-  if(!v) return 0;
-  const d=new Date(v);
-  return isNaN(d)?0:d.getTime();
-};
-const fmtDateLabel = v => {
-  if(!v) return '';
-  const d=new Date(v);
-  if(isNaN(d)) return '';
-  return `${d.getMonth()+1}/${d.getDate()}`;
-};
+// ── Build global cache after data load ───────────────────────────────────────
+function buildCache() {
+  CACHE = new Map();
 
-// ── Resolve most-current data per player (date-based) ────────────────────────
-function resolvePlayerData(name) {
-  const srcPri = {top:0, hs:1, orig:2, buy:3};
-  const candidates = [];
-  const nm = normName(name);
+  // Pre-compute max weeks for hitter/pitcher hot sheet streaks
+  const hitWeeks = hotsheet.filter(h=>!(h.pos||'').toLowerCase().includes('pitcher')).map(h=>parseInt(h.week)||0);
+  const pitWeeks = hotsheet.filter(h=>(h.pos||'').toLowerCase().includes('pitcher')).map(h=>parseInt(h.week)||0);
+  const maxHitWk = hitWeeks.length ? Math.max(...hitWeeks) : 0;
+  const maxPitWk = pitWeeks.length ? Math.max(...pitWeeks) : 0;
 
-  const buyEntry = players.find(b=>normName(b.name)===nm);
-  if(buyEntry) candidates.push({src:'buy', ts:parseDate(buyEntry.date), rank:null, price:cl(buyEntry.price)});
+  // Collect all unique player names across all sources
+  const allNames = new Set([
+    ...players.map(p=>p.name),
+    ...top200.map(p=>p.name),
+    ...top100.map(p=>p.name),
+    ...origTop200.map(p=>p.name),
+    ...origTop100.map(p=>p.name),
+    ...hotsheet.map(p=>p.name),
+  ]);
 
-  // Only updated top lists contribute rank for the card box
-  const topEntries = [...top200,...top100].filter(e=>normName(e.name)===nm);
-  topEntries.forEach(e=>candidates.push({src:'top', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+  allNames.forEach(name=>{
+    const nm = normName(name);
+    const entry = {};
 
-  // Orig lists contribute price history but NOT rank for the card box
-  [...origTop200,...origTop100].filter(e=>normName(e.name)===nm).forEach(e=>
-    candidates.push({src:'orig', ts:parseDate(e.date), rank:null, price:cl(e.price)}));
+    // ── Resolved data (price, rank, label, priceChange) ──
+    const srcPri = {top:0, hs:1, orig:2, buy:3};
+    const candidates = [];
+    const buyEntry = players.find(b=>normName(b.name)===nm);
+    if(buyEntry) candidates.push({src:'buy', ts:parseDate(buyEntry.date), rank:null, price:cl(buyEntry.price)});
 
-  hotsheet.filter(h=>normName(h.name)===nm).forEach(h=>
-    candidates.push({src:'hs', ts:parseDate(h.date), rank:null, price:cl(h.auto)}));
+    const topEntries = [...top200,...top100].filter(e=>normName(e.name)===nm);
+    topEntries.forEach(e=>candidates.push({src:'top', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+    [...origTop200,...origTop100].filter(e=>normName(e.name)===nm).forEach(e=>
+      candidates.push({src:'orig', ts:parseDate(e.date), rank:null, price:cl(e.price)}));
+    const hsEntries = hotsheet.filter(h=>normName(h.name)===nm);
+    hsEntries.forEach(h=>candidates.push({src:'hs', ts:parseDate(h.date), rank:null, price:cl(h.auto)}));
 
-  if(!candidates.length) return {rank:null,price:null,buy:null,hsLabel:null,priceChange:null};
+    if(candidates.length) {
+      candidates.sort((a,b)=>b.ts!==a.ts?b.ts-a.ts:srcPri[a.src]-srcPri[b.src]);
+      const best = candidates[0];
+      const topRank = topEntries.length
+        ? topEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a).rank : null;
+      entry.rank  = cl(topRank);
+      entry.price = best.price;
+      entry.buy   = buyEntry ? cl(buyEntry.buy) : null;
 
-  candidates.sort((a,b)=>b.ts!==a.ts?b.ts-a.ts:srcPri[a.src]-srcPri[b.src]);
-  const best=candidates[0];
+      // HS label from most recent HS entry
+      let hsLabel = null;
+      if(hsEntries.length) {
+        const hs = hsEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a);
+        if(hs.repeat) hsLabel='Repeat';
+        else if(cl(hs.category)) hsLabel=cl(hs.category);
+      }
+      entry.hsLabel = hsLabel;
 
-  // Rank: only from the most recent updated top list entry
-  const topRank = topEntries.length
-    ? topEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a).rank
-    : null;
-
-  const buyRating = buyEntry?cl(buyEntry.buy):null;
-
-  const hsEntries = hotsheet.filter(h=>normName(h.name)===nm);
-  let hsLabel=null;
-  if(hsEntries.length) {
-    const hs=hsEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a);
-    if(hs.repeat) hsLabel='Repeat';
-    else if(cl(hs.category)) hsLabel=cl(hs.category);
-  }
-
-  const buyPrice = buyEntry?cl(buyEntry.price):null;
-  let priceChange=null;
-  if(buyPrice && best.price && best.src!=='buy') {
-    const orig=parseFloat(buyPrice.replace(/[^0-9.]/g,''));
-    const now=parseFloat(best.price.replace(/[^0-9.]/g,''));
-    if(!isNaN(orig)&&!isNaN(now)&&orig>0) {
-      priceChange={orig:buyPrice, now:best.price, pct:parseFloat(((now-orig)/orig*100).toFixed(0))};
+      // Price change
+      const buyPrice = buyEntry ? cl(buyEntry.price) : null;
+      entry.priceChange = null;
+      if(buyPrice && best.price && best.src!=='buy') {
+        const orig=safeNum(buyPrice), now=safeNum(best.price);
+        if(orig>0) entry.priceChange={orig:buyPrice, now:best.price, pct:parseFloat(((now-orig)/orig*100).toFixed(0))};
+      }
+    } else {
+      entry.rank=null; entry.price=null; entry.buy=null; entry.hsLabel=null; entry.priceChange=null;
     }
-  }
 
-  return {rank:cl(topRank), price:best.price, buy:buyRating, hsLabel, priceChange};
+    // ── Card stats ──
+    const playerCards = cards.filter(c=>normName(c.player)===nm);
+    const owned = playerCards.filter(c=>!c.salePrice);
+    const sold  = playerCards.filter(c=> c.salePrice);
+    const totalInvested  = owned.reduce((s,c)=>s+safeNum(c.purchasePrice),0);
+    const totalSoldFor   = sold.reduce((s,c)=>s+safeNum(c.salePrice),0);
+    const totalNetProfit = sold.reduce((s,c)=>s+safeNum(c.netProfit,true),0);
+    const daysArr = sold.filter(c=>c.daysOwned).map(c=>parseFloat(c.daysOwned)).filter(n=>!isNaN(n));
+    const avgHold = daysArr.length ? Math.round(daysArr.reduce((a,b)=>a+b,0)/daysArr.length) : null;
+    const bestFlip= sold.reduce((best,c)=>{ const p=safeNum(c.netProfit,true); return (!best||p>safeNum(best.netProfit,true))?c:best; },null);
+    entry.cards = {owned, sold, totalInvested, totalSoldFor, totalNetProfit, avgHold, bestFlip};
+
+    // ── Hot sheet info ──
+    const isPit = (players.find(p=>normName(p.name)===nm)?.pos||'').toLowerCase().includes('pitcher') ||
+                  (hsEntries[0]?.pos||'').toLowerCase().includes('pitcher');
+    const maxWk = isPit ? maxPitWk : maxHitWk;
+    const playerWeeks = [...new Set(hsEntries.map(h=>parseInt(h.week)).filter(n=>!isNaN(n)))].sort((a,b)=>a-b);
+    const onLatest = playerWeeks.includes(maxWk);
+    let streak=0;
+    if(onLatest){ streak=1; for(let w=maxWk-1;w>=1;w--){ if(playerWeeks.includes(w)) streak++; else break; } }
+    entry.hsInfo = {totalAppearances:playerWeeks.length, onLatest, streak, maxWeek:maxWk};
+
+    // Store by normalized name
+    CACHE.set(nm, entry);
+  });
 }
 
-// ── History charts ────────────────────────────────────────────────────────────
-function buildHistoryCharts(name) {
-  const pricePoints=[], rankPoints=[];
-
-  const add = (dateVal, rawVal, list) => {
-    const ts=parseDate(dateVal);
-    if(!ts||!rawVal) return;
-    const n=parseFloat(String(rawVal).replace(/[^0-9.]/g,''));
-    if(isNaN(n)) return;
-    list.push({label:fmtDateLabel(dateVal), ts, val:n});
-  };
-
-  const buyEntry=players.find(b=>normName(b.name)===normName(name));
-  if(buyEntry) { add(buyEntry.date,buyEntry.price,pricePoints); add(buyEntry.date,buyEntry.hobby,rankPoints); }
-
-  [...origTop200,...origTop100].filter(e=>normName(e.name)===normName(name)).forEach(e=>{
-    add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints);
-  });
-  [...top200,...top100].filter(e=>normName(e.name)===normName(name)).forEach(e=>{
-    add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints);
-  });
-  hotsheet.filter(h=>normName(h.name)===normName(name)).forEach(h=>{
-    add(h.date,h.auto,pricePoints); add(h.date,h.hobby,rankPoints);
-  });
-
-  const dedup = pts => {
-    pts.sort((a,b)=>a.ts-b.ts);
-    const m=new Map();
-    pts.forEach(p=>{ if(!m.has(p.ts)) m.set(p.ts,p); });
-    return [...m.values()];
-  };
-
-  const prices=dedup(pricePoints).filter(p=>!isNaN(p.val));
-  const ranks=dedup(rankPoints).filter(p=>!isNaN(p.val));
-
-  const makeSvg = (points, isRank) => {
-    if(points.length<2) return '';
-    const W=280,H=68,Pt=20,Pb=22,Pl=10,Pr=10;
-    const iW=W-Pl-Pr, iH=H-Pt-Pb;
-    const vals=points.map(p=>p.val);
-    let minV=Math.min(...vals), maxV=Math.max(...vals);
-    if(minV===maxV){minV=Math.max(0,minV*0.85);maxV=maxV*1.15||1;}
-    const yS = v => isRank ? Pt+(v-minV)/(maxV-minV)*iH : Pt+(1-(v-minV)/(maxV-minV))*iH;
-    const xS = i => Pl+(points.length===1?iW/2:i/(points.length-1)*iW);
-    const pts=points.map((p,i)=>({...p,x:xS(i),y:yS(p.val)}));
-    const poly=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-    const cls=isRank?'chart-line-rank':'chart-line';
-    const dc=isRank?'chart-dot-rank':'chart-dot';
-    const dots=pts.map((p,i)=>{
-      const first=i===0,last=i===pts.length-1;
-      const anc=first?'start':last?'end':'middle';
-      const vStr=isRank?`#${p.val}`:`$${p.val}`;
-      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="${dc}"/>
-        ${(first||last)?`<text x="${p.x.toFixed(1)}" y="${(p.y-6).toFixed(1)}" text-anchor="${anc}" class="chart-val">${vStr}</text>`:''}
-        <text x="${p.x.toFixed(1)}" y="${(H-3).toFixed(1)}" text-anchor="${anc}" class="chart-label">${p.label}</text>`;
-    }).join('');
-    return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg"><polyline points="${poly}" class="${cls}"/>${dots}</svg>`;
-  };
-
-  let html='';
-  const pSvg=makeSvg(prices,false);
-  const rSvg=makeSvg(ranks,true);
-  if(pSvg) html+=`<div class="chart-wrap"><div class="chart-title">Price history</div>${pSvg}</div>`;
-  if(rSvg) html+=`<div class="chart-wrap"><div class="chart-title">Rank history <span style="font-size:9px;color:var(--tx3)">(lower = better)</span></div>${rSvg}</div>`;
-  return html;
-}
+// Cache accessors — these replace the old per-call functions
+const getResolved  = name => CACHE?.get(normName(name)) || {rank:null,price:null,buy:null,hsLabel:null,priceChange:null};
+const getCardStats = name => CACHE?.get(normName(name))?.cards || {owned:[],sold:[],totalInvested:0,totalSoldFor:0,totalNetProfit:0,avgHold:null,bestFlip:null};
+const getHsInfo    = name => CACHE?.get(normName(name))?.hsInfo || {totalAppearances:0,onLatest:false,streak:0,maxWeek:0};
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
 async function fetchRange(rng) {
-  const url=BASE+encodeURIComponent(rng)+'?key='+KEY;
-  const r=await fetch(url);
+  const r = await fetch(BASE+encodeURIComponent(rng)+'?key='+KEY);
   if(!r.ok) throw new Error(`${rng}: HTTP ${r.status}`);
   return (await r.json()).values||[];
 }
@@ -397,49 +393,43 @@ async function loadAll() {
   document.getElementById('cntlbl').textContent='Loading...';
   document.getElementById('list').innerHTML='<div class="spin"><div class="spin-ring"></div>Fetching from Google Sheets...</div>';
   document.getElementById('rfab').classList.add('spin');
+  CACHE = null;
   try {
-    const [pR,h2,p1,oh2,op1,hsR,cR]=await Promise.all([
+    const [pR,h2,p1,oh2,op1,hsR,cR] = await Promise.all([
       fetchRange("'Players All'!A2:P2000"),
       fetchRange("'Top 200 Hitters Updated'!A2:H2000"),
       fetchRange("'Top 100 Pitchers Updated'!A2:H2000"),
       fetchRange("'200 Hitters Original'!A2:G2000"),
       fetchRange("'100 Pitchers Original'!A2:G2000"),
       fetchRange("'Hot Sheet'!A2:AE2000"),
-      fetch(`${TRACKER_BASE}${encodeURIComponent("'Card Cost Tracker Final'!A2:W2000")}?key=${KEY}`).then(r=>r.ok?r.json().then(d=>d.values||[]):[]),
+      fetch(`${TRACKER_BASE}${encodeURIComponent("'Card Cost Tracker Final'!A2:W2000")}?key=${KEY}`)
+        .then(r=>r.ok?r.json().then(d=>d.values||[]):[]),
     ]);
 
-    // Players All: col0=Date,col1=Team,col2=Position,col3=Player,col4=Age,
-    // col5=Price,col6=MLB,col7=DD,col8=Roto,col9=StS,col10=BA,
-    // col11=HobbyRank,col12=BuyRating,col13=LastYear,col14=Change
-    players=pR.filter(r=>r[3]).map(r=>({
+    players = pR.filter(r=>r[3]).map(r=>({
       date:cl(r[0]),team:cl(r[1])||'',pos:cl(r[2])||'',name:cl(r[3])||'',
       age:cl(r[4]),price:cl(r[5]),mlb:cl(r[6]),dd:cl(r[7]),roto:cl(r[8]),
       sts:cl(r[9]),ba:cl(r[10]),hobby:cl(r[11]),buy:cl(r[12]),
       lastYr:cl(r[13]),chg:cl(r[14]),notes:cl(r[15])
     }));
 
-    // Updated top lists: col0=Date,col1=Rank,col2=Player,col3=Team,col4=Age,col5=Prev,col6=Diff,col7=Price
-    top200=h2.filter(r=>r[2]).map(r=>({
+    top200 = h2.filter(r=>r[2]).map(r=>({
       date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',
       age:cl(r[4]),prev:cl(r[5]),diff:cl(r[6]),price:cl(r[7])
     }));
-    top100=p1.filter(r=>r[2]).map(r=>({
+    top100 = p1.filter(r=>r[2]).map(r=>({
       date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',
       age:cl(r[4]),prev:cl(r[5]),diff:cl(r[6]),price:cl(r[7])
     }));
 
-    // Original rankings: col0=Date,col1=Rank,col2=Player,col3=Team,col4=Age,col5=HobbyScore,col6=Price
-    origTop200=oh2.filter(r=>r[2]).map(r=>({
+    origTop200 = oh2.filter(r=>r[2]).map(r=>({
       date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',price:cl(r[6])
     }));
-    origTop100=op1.filter(r=>r[2]).map(r=>({
+    origTop100 = op1.filter(r=>r[2]).map(r=>({
       date:cl(r[0]),rank:cl(r[1]),name:cl(r[2])||'',team:cl(r[3])||'',price:cl(r[6])
     }));
 
-    // Hot Sheet: col0=Date,col1=Week,col2=Position,col3=Level,col4=Name,col5=Age,col6=Aff
-    // col7-14=pitcher stats, col15-24=hitter stats
-    // col25=Auto(price),col26=14-Day,col27=HobbyRank,col28=RepeatOffender,col29=Category,col30=Notes
-    hotsheet=hsR.filter(r=>r[4]).map(r=>({
+    hotsheet = hsR.filter(r=>r[4]).map(r=>({
       date:cl(r[0]),week:cl(r[1]),pos:cl(r[2]),level:cl(r[3]),
       name:cl(r[4])||'',age:cl(r[5]),aff:cl(r[6]),
       ip:cl(r[7]),hp:cl(r[8]),er:cl(r[9]),bbp:cl(r[10]),sop:cl(r[11]),
@@ -451,24 +441,15 @@ async function loadAll() {
       repeat:cl(r[28])==='Yes',category:cl(r[29]),notes:cl(r[30])
     }));
 
-    // Card Cost Tracker Final:
-    // col0=ItemID, col7=PlayerName, col10=PurchasePrice, col11=SalePrice,
-    // col12=SaleFees, col13=NetProfit, col15=DatePurchased, col16=TransactionDate,
-    // col17=PurchasedFrom, col19=DateSold, col22=FullCard
     cards = cR.filter(r=>r[7]).map(r=>({
-      player:  (cl(r[7])||'').toLowerCase(),
-      fullCard: cl(r[22]) || [cl(r[2]),cl(r[3]),cl(r[4]),cl(r[7])].filter(Boolean).join(' '),
-      purchasePrice: cl(r[10]),
-      salePrice:     cl(r[11]),
-      saleFees:      cl(r[12]),
-      netProfit:     cl(r[13]),
-      datePurchased: cl(r[15]),
-      transactionDate: cl(r[16]),
-      purchasedFrom: cl(r[17]),
-      serialNo:      cl(r[8]),
-      daysOwned:     cl(r[20]),
+      player:(cl(r[7])||'').toLowerCase(),
+      fullCard:cl(r[22])||[cl(r[2]),cl(r[3]),cl(r[4]),cl(r[7])].filter(Boolean).join(' '),
+      purchasePrice:cl(r[10]),salePrice:cl(r[11]),saleFees:cl(r[12]),
+      netProfit:cl(r[13]),datePurchased:cl(r[15]),transactionDate:cl(r[16]),
+      serialNo:cl(r[8]),daysOwned:cl(r[20])
     }));
 
+    buildCache();
     render();
   } catch(e) {
     document.getElementById('list').innerHTML=`<div class="err"><strong>Could not load data</strong><br>${e.message}<br><br>Make sure the sheet is shared as "Anyone with the link can view".</div>`;
@@ -477,209 +458,105 @@ async function loadAll() {
   document.getElementById('rfab').classList.remove('spin');
 }
 
-// ── Card stats helper ─────────────────────────────────────────────────────────
-function getCardStats(name) {
-  const nm = normName(name);
-  const playerCards = cards.filter(c => normName(c.player) === nm);
-  const owned = playerCards.filter(c => !c.salePrice);
-  const sold  = playerCards.filter(c =>  c.salePrice);
-  const totalInvested = owned.reduce((s,c) => s + (parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0), 0);
-  const totalSoldFor  = sold.reduce((s,c)  => s + (parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0), 0);
-  const totalFees     = sold.reduce((s,c)  => s + (parseFloat(String(c.saleFees||'0').replace(/[^0-9.]/g,''))||0), 0);
-  const totalNetProfit= sold.reduce((s,c)  => s + (parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0), 0);
-  const daysOwned     = sold.filter(c=>c.daysOwned).map(c=>parseFloat(c.daysOwned)).filter(n=>!isNaN(n));
-  const avgHold       = daysOwned.length ? Math.round(daysOwned.reduce((a,b)=>a+b,0)/daysOwned.length) : null;
-  const bestFlip      = sold.reduce((best,c) => {
-    const p=parseFloat(c.netProfit)||0;
-    return (!best||p>parseFloat(best.netProfit||0)) ? c : best;
-  }, null);
-  return {owned, sold, totalInvested, totalSoldFor, totalFees, totalNetProfit, avgHold, bestFlip};
-}
-
-// ── Investment tier ───────────────────────────────────────────────────────────
-function invTier(amount) {
-  if(amount<=0) return null;
-  if(amount<=25) return 'inv1';
-  if(amount<=50) return 'inv2';
-  if(amount<=100) return 'inv3';
-  return 'inv4';
-}
-
-// ── Sort options per tab ──────────────────────────────────────────────────────
-const SORT_OPTS = {
-  all:   [{k:'default',l:'BR'},{k:'rank',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
-  t200:  [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
-  t100:  [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
-  hs:    [{k:'default',l:'Recent'},{k:'weeks',l:'Weeks'},{k:'streak',l:'Streak'},{k:'name',l:'Name'},{k:'owned',l:'$ Owned'}],
-};
-
+// ── Sort ──────────────────────────────────────────────────────────────────────
 function renderSortChips() {
   const opts = SORT_OPTS[tab];
   const el = document.getElementById('sortchips');
-  if(!opts) { el.innerHTML=''; return; }
+  if(!opts){ el.innerHTML=''; return; }
   el.innerHTML = opts.map(o=>
     `<button class="schip${sortBy===o.k||(!opts.find(x=>x.k===sortBy)&&o.k==='default')?' on':''}" data-s="${o.k}">${o.l}</button>`
   ).join('');
 }
 
-// ── Pool ──────────────────────────────────────────────────────────────────────
 function applySort(pool, defaultSort) {
   const s = SORT_OPTS[tab]?.find(o=>o.k===sortBy) ? sortBy : 'default';
   if(s==='default') return defaultSort(pool);
+  if(s==='name') return pool.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
 
-  // Pre-compute sort keys once per player
   const cache = new Map();
   pool.forEach(p=>{
-    const name = p.name;
-    if(s==='rank') {
-      cache.set(name, parseInt(resolvePlayerData(name).rank)||9999);
-    } else if(s==='price') {
-      const pr = resolvePlayerData(name).price||'0';
-      cache.set(name, parseFloat(String(pr).replace(/[^0-9.]/g,''))||0);
-    } else if(s==='owned') {
-      cache.set(name, getCardStats(name).totalInvested);
-    } else if(s==='weeks') {
-      cache.set(name, getHsInfo(name, p.pos||p.aff||'')?.totalAppearances||0);
-    } else if(s==='streak') {
-      cache.set(name, getHsInfo(name, p.pos||p.aff||'')?.streak||0);
-    }
+    const d = getResolved(p.name);
+    const cs = getCardStats(p.name);
+    const hi = getHsInfo(p.name);
+    const val =
+      s==='rank'   ? (parseInt(d.rank)||9999) :
+      s==='price'  ? safeNum(d.price) :
+      s==='owned'  ? cs.totalInvested :
+      s==='weeks'  ? hi.totalAppearances :
+      s==='streak' ? hi.streak : 0;
+    cache.set(p.name, val);
   });
 
   return pool.slice().sort((a,b)=>{
-    if(s==='name') return (a.name||'').localeCompare(b.name||'');
-    const va = cache.get(a.name)??0;
-    const vb = cache.get(b.name)??0;
-    // rank: low is better. owned/weeks/streak/price: high is better
+    const va=cache.get(a.name)??0, vb=cache.get(b.name)??0;
     return s==='rank' ? va-vb : vb-va;
   });
 }
 
+// ── Pool ──────────────────────────────────────────────────────────────────────
 function mostRecent(arr) {
-  const seen=new Map();
-  arr.forEach(r=>{
-    const ts=parseDate(r.date);
-    if(!seen.has(r.name)||ts>seen.get(r.name)._ts) seen.set(r.name,{...r,_ts:ts});
-  });
+  const seen = new Map();
+  arr.forEach(r=>{ const ts=parseDate(r.date); if(!seen.has(r.name)||ts>seen.get(r.name)._ts) seen.set(r.name,{...r,_ts:ts}); });
   return [...seen.values()];
 }
 
 function getPool() {
-  if(tab==='t200') {
-    const base=mostRecent(top200).filter(r=>matchQ(r.name,r.team));
-    return applySort(base,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank)));
-  }
-  if(tab==='t100') {
-    const base=mostRecent(top100).filter(r=>matchQ(r.name,r.team));
-    return applySort(base,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank)));
-  }
-  if(tab==='hs') {
-    const base=mostRecent(hotsheet).filter(r=>matchQ(r.name,r.aff));
-    return applySort(base,p=>p.slice().sort((a,b)=>parseDate(b.date)-parseDate(a.date)));
-  }
+  if(tab==='t200'){ const b=mostRecent(top200).filter(r=>matchQ(r.name,r.team)); return applySort(b,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank))); }
+  if(tab==='t100'){ const b=mostRecent(top100).filter(r=>matchQ(r.name,r.team)); return applySort(b,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank))); }
+  if(tab==='hs')  { const b=mostRecent(hotsheet).filter(r=>matchQ(r.name,r.aff)); return applySort(b,p=>p.slice().sort((a,b)=>parseDate(b.date)-parseDate(a.date))); }
   if(tab==='port') return [];
 
   let pool=[...players];
   if(brf==='5') pool=pool.filter(p=>parseInt(p.buy)===5);
   else if(brf==='4') pool=pool.filter(p=>parseInt(p.buy)>=4);
-  else if(brf==='owned') pool=pool.filter(p=>cards.some(c=>normName(c.player)===normName(p.name)&&!c.salePrice));
-  else if(brf==='sold')  pool=pool.filter(p=>cards.some(c=>normName(c.player)===normName(p.name)&&c.salePrice));
+  else if(brf==='owned') pool=pool.filter(p=>getCardStats(p.name).owned.length>0);
+  else if(brf==='sold')  pool=pool.filter(p=>getCardStats(p.name).sold.length>0);
   if(posf==='hit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('hitter'));
   else if(posf==='pit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('pitcher'));
   pool=pool.filter(p=>matchQ(p.name,p.team));
   return applySort(pool,p=>p.slice().sort((a,b)=>{
     const ab=parseInt(a.buy)||0,bb=parseInt(b.buy)||0;
     if(ab!==bb) return bb-ab;
-    return (parseFloat(b.price)||0)-(parseFloat(a.price)||0);
+    return safeNum(b.price)-safeNum(a.price);
   }));
-}
-
-// ── Hot sheet frequency helper ────────────────────────────────────────────────
-function getHsInfo(name, pos) {
-  const isPit = (pos||'').toLowerCase().includes('pitcher');
-  const entries = hotsheet.filter(h=>normName(h.name)===normName(name));
-  if(!entries.length) return null;
-
-  // Find max week separately for hitters and pitchers
-  const hitterWeeks = hotsheet.filter(h=>!normName(h.pos||'').includes('pitcher')).map(h=>parseInt(h.week)||0);
-  const pitcherWeeks = hotsheet.filter(h=>normName(h.pos||'').includes('pitcher')).map(h=>parseInt(h.week)||0);
-  const maxWeek = isPit
-    ? (pitcherWeeks.length ? Math.max(...pitcherWeeks) : 0)
-    : (hitterWeeks.length ? Math.max(...hitterWeeks) : 0);
-
-  const playerWeeks = [...new Set(entries.map(h=>parseInt(h.week)).filter(n=>!isNaN(n)))].sort((a,b)=>a-b);
-  const totalAppearances = playerWeeks.length;
-  const onLatest = playerWeeks.includes(maxWeek);
-
-  // Consecutive streak ending at maxWeek
-  let streak = 0;
-  if(onLatest) {
-    streak = 1;
-    for(let w = maxWeek-1; w >= 1; w--) {
-      if(playerWeeks.includes(w)) streak++;
-      else break;
-    }
-  }
-
-  return {totalAppearances, onLatest, streak, maxWeek};
 }
 
 // ── Card builder ──────────────────────────────────────────────────────────────
 function buildCard(name, team, pos, i, tp, overrides={}) {
-  const d=resolvePlayerData(name);
+  const d      = getResolved(name);
   const rank   = overrides.rank  ?? d.rank;
   const price  = overrides.price ?? d.price;
-  const buy    = d.buy;
+  const cs     = getCardStats(name);
+  const hi     = getHsInfo(name);
   const hsLabel= d.hsLabel;
   const isRepeat  = hsLabel&&hsLabel.toLowerCase().includes('repeat');
   const isSleeper = hsLabel&&hsLabel.toLowerCase().includes('sleeper');
-
   const isPitcher = (pos||'').toLowerCase().includes('pitcher');
+
   const rankHtml = rank
     ? `<div class="rnum${isPitcher?' pitcher':''}">#${rank}</div>`
     : `<div class="rnum empty">—</div>`;
 
   const priceStr = price?(String(price).startsWith('$')?price:'$'+price):'';
-  const priceHtml = priceStr
-    ? `<div class="pbox">${priceStr}</div>`
-    : `<div class="pbox empty">—</div>`;
+  const priceHtml= priceStr?`<div class="pbox">${priceStr}</div>`:`<div class="pbox empty">—</div>`;
 
   let labelHtml='';
-  if(hsLabel) {
-    const cls=isRepeat?'repeat':isSleeper?'sleeper':'';
-    labelHtml=`<span class="hs-label${cls?' '+cls:''}">${hsLabel}</span>`;
-  }
+  if(hsLabel){ const cls=isRepeat?'repeat':isSleeper?'sleeper':''; labelHtml=`<span class="hs-label${cls?' '+cls:''}">${hsLabel}</span>`; }
 
-  // Hot sheet frequency info
-  const hsInfo = getHsInfo(name, pos);
-  const onLatestSheet = hsInfo && hsInfo.onLatest;
-
-  // Left border — blue if on most recent hot sheet
-  const borderClass = onLatestSheet ? ' recent-hs' : (isRepeat ? ' repeat' : '');
-
-  // Hot sheet badge — only on Hot Sheet tab
+  // Week badges — Hot Sheet tab only
   let wkHtml='';
-  if(tab==='hs' && hsInfo) {
-    const {totalAppearances, streak, onLatest} = hsInfo;
-    if(streak >= 2) {
-      wkHtml = `<span class="wk-badge streak">${streak} Straight</span>`;
-    } else if(onLatest) {
-      wkHtml = `<span class="wk-badge">Most Recent</span>`;
-    }
-    if(totalAppearances > 1) {
-      wkHtml += `<span class="wk-badge">x${totalAppearances}</span>`;
-    }
+  if(tab==='hs' && hi.totalAppearances>0){
+    if(hi.streak>=2) wkHtml+=`<span class="wk-badge streak">${hi.streak} Straight</span>`;
+    else if(hi.onLatest) wkHtml+=`<span class="wk-badge">Most Recent</span>`;
+    if(hi.totalAppearances>1) wkHtml+=`<span class="wk-badge">x${hi.totalAppearances}</span>`;
   }
 
   // Inventory badges
-  const cs = getCardStats(name);
   let invHtml='';
-  if(cs.owned.length>0) {
-    const tier = invTier(cs.totalInvested);
-    invHtml += `<span class="inv-badge ${tier}">${cs.owned.length} owned · $${cs.totalInvested.toFixed(0)}</span>`;
-  }
-  if(cs.sold.length>0) {
-    invHtml += `<span class="sold-badge">${cs.sold.length} sold</span>`;
-  }
+  if(cs.owned.length>0){ const tier=invTier(cs.totalInvested); invHtml+=`<span class="inv-badge ${tier}">${cs.owned.length} owned · $${cs.totalInvested.toFixed(0)}</span>`; }
+  if(cs.sold.length>0) invHtml+=`<span class="sold-badge">${cs.sold.length} sold</span>`;
+
+  const borderClass = hi.onLatest?' recent-hs':'';
 
   return `<div class="card${borderClass}" data-i="${i}" data-tp="${tp}">
     ${rankHtml}
@@ -687,97 +564,245 @@ function buildCard(name, team, pos, i, tp, overrides={}) {
       <div class="r1"><span class="pname">${name}</span></div>
       <div class="r2">
         <span>${team||''}</span><span>${pos||''}</span>
-        ${labelHtml}
-        ${buy?badge(buy):''}
-        ${wkHtml}
-        ${invHtml}
+        ${labelHtml}${d.buy?badge(d.buy):''}${wkHtml}${invHtml}
       </div>
     </div>
     ${priceHtml}
   </div>`;
 }
 
-// ── Portfolio renderer ────────────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const isTop=tab==='t200'||tab==='t100', isHS=tab==='hs', isPort=tab==='port';
+  const showChips=!isTop&&!isHS&&!isPort;
+  document.getElementById('chips').style.display=showChips?'flex':'none';
+  document.getElementById('chips2').style.display=showChips?'flex':'none';
+  renderSortChips();
+  if(isPort){ renderPortfolio(); return; }
+
+  const pool=getPool();
+  document.getElementById('cntlbl').textContent=`${pool.length} player${pool.length===1?'':'s'}`;
+  if(!pool.length){ document.getElementById('list').innerHTML='<div class="empty-msg">No players match</div>'; return; }
+
+  let html='';
+  if(isHS) html=pool.map((r,i)=>buildCard(r.name,r.aff,r.pos,i,'hs')).join('');
+  else if(isTop) html=pool.map((r,i)=>buildCard(r.name,r.team,tab==='t200'?'Hitter':'Pitcher',i,'top',{rank:r.rank,price:r.price})).join('');
+  else html=pool.map((p,i)=>buildCard(p.name,p.team,p.pos,i,'player')).join('');
+
+  document.getElementById('list').innerHTML=html;
+  document.querySelectorAll('#list .card').forEach(c=>{
+    c.addEventListener('click',()=>showDetail(pool[+c.dataset.i],c.dataset.tp));
+  });
+}
+
+// ── History charts ────────────────────────────────────────────────────────────
+function buildHistoryCharts(name) {
+  const nm=normName(name);
+  const pricePoints=[], rankPoints=[];
+  const add=(dateVal,rawVal,list)=>{
+    const ts=parseDate(dateVal); if(!ts||!rawVal) return;
+    const n=parseFloat(String(rawVal).replace(/[^0-9.]/g,'')); if(isNaN(n)) return;
+    list.push({label:fmtDateLabel(dateVal),ts,val:n});
+  };
+  const buyE=players.find(b=>normName(b.name)===nm);
+  if(buyE){ add(buyE.date,buyE.price,pricePoints); add(buyE.date,buyE.hobby,rankPoints); }
+  [...origTop200,...origTop100].filter(e=>normName(e.name)===nm).forEach(e=>{ add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints); });
+  [...top200,...top100].filter(e=>normName(e.name)===nm).forEach(e=>{ add(e.date,e.price,pricePoints); add(e.date,e.rank,rankPoints); });
+  hotsheet.filter(h=>normName(h.name)===nm).forEach(h=>{ add(h.date,h.auto,pricePoints); add(h.date,h.hobby,rankPoints); });
+
+  const dedup=pts=>{ pts.sort((a,b)=>a.ts-b.ts); const m=new Map(); pts.forEach(p=>{ if(!m.has(p.ts)) m.set(p.ts,p); }); return [...m.values()]; };
+  const prices=dedup(pricePoints).filter(p=>!isNaN(p.val));
+  const ranks=dedup(rankPoints).filter(p=>!isNaN(p.val));
+
+  const makeSvg=(points,isRank)=>{
+    if(points.length<2) return '';
+    const W=280,H=68,Pt=20,Pb=22,Pl=10,Pr=10,iW=W-Pl-Pr,iH=H-Pt-Pb;
+    const vals=points.map(p=>p.val);
+    let minV=Math.min(...vals),maxV=Math.max(...vals);
+    if(minV===maxV){minV=Math.max(0,minV*0.85);maxV=maxV*1.15||1;}
+    const yS=v=>isRank?Pt+(v-minV)/(maxV-minV)*iH:Pt+(1-(v-minV)/(maxV-minV))*iH;
+    const xS=i=>Pl+(points.length===1?iW/2:i/(points.length-1)*iW);
+    const pts=points.map((p,i)=>({...p,x:xS(i),y:yS(p.val)}));
+    const poly=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+    const cls=isRank?'chart-line-rank':'chart-line', dc=isRank?'chart-dot-rank':'chart-dot';
+    const dots=pts.map((p,i)=>{
+      const first=i===0,last=i===pts.length-1,anc=first?'start':last?'end':'middle';
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" class="${dc}"/>
+        ${(first||last)?`<text x="${p.x.toFixed(1)}" y="${(p.y-6).toFixed(1)}" text-anchor="${anc}" class="chart-val">${isRank?'#':'$'}${p.val}</text>`:''}
+        <text x="${p.x.toFixed(1)}" y="${(H-3).toFixed(1)}" text-anchor="${anc}" class="chart-label">${p.label}</text>`;
+    }).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart-svg"><polyline points="${poly}" class="${cls}"/>${dots}</svg>`;
+  };
+  let html='';
+  const pSvg=makeSvg(prices,false), rSvg=makeSvg(ranks,true);
+  if(pSvg) html+=`<div class="chart-wrap"><div class="chart-title">Price history</div>${pSvg}</div>`;
+  if(rSvg) html+=`<div class="chart-wrap"><div class="chart-title">Rank history <span style="font-size:9px;color:var(--tx3)">(lower = better)</span></div>${rSvg}</div>`;
+  return html;
+}
+
+// ── Modal sections ────────────────────────────────────────────────────────────
+function modalHsHistory(hist) {
+  if(!hist.length) return '';
+  const rows = hist.map(h=>{
+    const isPit=h.pos==='Pitcher';
+    const stats=isPit
+      ?`<div><div class="hs-sl">IP</div><div class="hs-sv">${fmt(h.ip)}</div></div><div><div class="hs-sl">ERA</div><div class="hs-sv">${fmt(h.era)}</div></div><div><div class="hs-sl">WHIP</div><div class="hs-sv">${fmt(h.whip)}</div></div><div><div class="hs-sl">K/9</div><div class="hs-sv">${fmt(h.k9)}</div></div><div><div class="hs-sl">SO</div><div class="hs-sv">${fmt(h.sop)}</div></div><div><div class="hs-sl">BB</div><div class="hs-sv">${fmt(h.bbp)}</div></div>`
+      :`<div><div class="hs-sl">OPS</div><div class="hs-sv">${fmt(h.ops)}</div></div><div><div class="hs-sl">BA</div><div class="hs-sv">${fmt(h.ba)}</div></div><div><div class="hs-sl">HR</div><div class="hs-sv">${fmt(h.hr)}</div></div><div><div class="hs-sl">RBI</div><div class="hs-sv">${fmt(h.rbi)}</div></div><div><div class="hs-sl">SB</div><div class="hs-sv">${fmt(h.sb)}</div></div><div><div class="hs-sl">OBP</div><div class="hs-sv">${fmt(h.obp)}</div></div>`;
+    return `<div class="hs-entry${h.repeat?' repeat':''}">
+      <div class="hs-hdr">
+        <span class="hs-wk">${fmtDateLabel(h.date)||'Wk '+h.week}</span>
+        <span class="hs-lvl">${h.level}</span>
+        ${h.category?`<span class="hs-cat">${h.category}</span>`:''}
+        ${h.auto?`<span style="margin-left:auto;font-size:12px;font-weight:500">${h.auto}</span>`:''}
+      </div>
+      <div class="hs-stats">${stats}</div>
+      ${h.notes?`<div class="hs-notes">${h.notes}</div>`:''}
+    </div>`;
+  }).join('');
+  return `<div class="section-hdr">Hot sheet history</div>${rows}`;
+}
+
+function modalCards(name) {
+  const cs = getCardStats(name);
+  const {owned, sold, totalInvested, totalNetProfit, avgHold, bestFlip} = cs;
+  if(!owned.length && !sold.length) return '';
+
+  const summary = `<div class="srow" style="margin-bottom:9px"><div class="srow-t">Cards summary</div><div class="s3">
+    <div><div class="sc-l">Owned</div><div class="sc-v">${owned.length}</div></div>
+    <div><div class="sc-l">Invested</div><div class="sc-v">$${totalInvested.toFixed(0)}</div></div>
+    <div><div class="sc-l">Sold</div><div class="sc-v">${sold.length}</div></div>
+    ${totalNetProfit!==0?`<div><div class="sc-l">Net profit</div><div class="sc-v"><span class="${totalNetProfit>=0?'up':'dn'}">${totalNetProfit>=0?'+':''}$${Math.abs(totalNetProfit).toFixed(2)}</span></div></div>`:''}
+    ${avgHold!==null?`<div><div class="sc-l">Avg hold</div><div class="sc-v">${avgHold}d</div></div>`:''}
+  </div></div>`;
+
+  const flip = bestFlip && safeNum(bestFlip.netProfit,true)>0 ? `<div class="srow" style="margin-bottom:9px"><div class="srow-t">Best flip</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:4px">${bestFlip.fullCard||'—'}</div>
+    <div class="s3">
+      <div><div class="sc-l">Cost</div><div class="sc-v">${fmtMoney(bestFlip.purchasePrice)}</div></div>
+      <div><div class="sc-l">Sold</div><div class="sc-v">${fmtMoney(bestFlip.salePrice)}</div></div>
+      <div><div class="sc-l">Net</div><div class="sc-v"><span class="up">+$${safeNum(bestFlip.netProfit,true).toFixed(2)}</span></div></div>
+    </div></div>` : '';
+
+  const ownedRows = owned.map(c=>`<div class="ct-entry owned">
+    <div class="ct-name">${c.fullCard||'—'}</div>
+    <div class="ct-row">
+      <div class="ct-stat"><div class="ct-l">Purchased</div><div class="ct-v">${fmtShortDate(c.datePurchased||c.transactionDate)}</div></div>
+      <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
+    </div>
+    ${c.serialNo?`<div class="ct-serial">/${c.serialNo}</div>`:''}
+  </div>`).join('');
+
+  const soldRows = sold.map(c=>{ const p=safeNum(c.netProfit,true); return `<div class="ct-entry sold">
+    <div class="ct-name">${c.fullCard||'—'}</div>
+    <div class="ct-row">
+      <div class="ct-stat"><div class="ct-l">Sold</div><div class="ct-v">${fmtShortDate(c.transactionDate)}</div></div>
+      <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
+      <div class="ct-stat"><div class="ct-l">Sold for</div><div class="ct-v">${fmtMoney(c.salePrice)}</div></div>
+      <div class="ct-stat"><div class="ct-l">Net</div><div class="ct-v"><span class="${p>=0?'up':'dn'}">${p>=0?'+':''}$${Math.abs(p).toFixed(2)}</span></div></div>
+    </div>
+    ${c.serialNo?`<div class="ct-serial">/${c.serialNo}</div>`:''}
+  </div>`; }).join('');
+
+  return `<div class="section-hdr">My cards</div>${summary}${flip}
+    ${owned.length?`<div class="section-hdr">Owned (${owned.length})</div>${ownedRows}`:''}
+    ${sold.length?`<div class="section-hdr" style="margin-top:${owned.length?'12px':'0'}">Sold (${sold.length})</div>${soldRows}`:''}`;
+}
+
+// ── Detail modal ──────────────────────────────────────────────────────────────
+function showDetail(p, tp) {
+  const nm     = normName(p.name);
+  const master = players.find(b=>normName(b.name)===nm);
+  const d      = getResolved(p.name);
+  const hist   = hotsheet.filter(h=>normName(h.name)===nm).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
+  const topE   = [...mostRecent(top200),...mostRecent(top100)].find(e=>normName(e.name)===nm);
+
+  const currentPrice = d.price?(String(d.price).startsWith('$')?d.price:'$'+d.price):'—';
+  const currentRank  = d.rank?'#'+d.rank:'—';
+
+  const hsWeeks=[...new Set(hist.map(h=>h.week).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
+  const wksHtml=hsWeeks.length?`<div style="margin-bottom:9px">${hsWeeks.map(w=>`<span class="wk-badge">Wk${w}</span>`).join('')}</div>`:'';
+
+  const html=`
+    <div class="mname">${p.name}</div>
+    <div class="msub">${master?master.team:p.team||p.aff||''} · ${master?master.pos:p.pos||''}${master&&master.buy?' · Buy Rating '+master.buy:''}</div>
+
+    <div class="sgrid">
+      <div class="scard"><div class="slbl">Rank</div><div class="sval">${currentRank}</div></div>
+      <div class="scard"><div class="slbl">Price</div><div class="sval">${currentPrice}</div></div>
+      <div class="scard"><div class="slbl">Age</div><div class="sval">${fmt(master?master.age:p.age)}</div></div>
+      <div class="scard"><div class="slbl">Buy Rating</div><div class="sval">${fmt(master?master.buy:null)}</div></div>
+    </div>
+
+    ${master&&master.notes?`<div class="srow" style="padding:0;overflow:hidden">
+      <button class="notes-toggle" onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.arr').textContent=b.style.display==='none'?'▼':'▲'">
+        <span class="lbl">Buy Sheet Notes</span><span class="arr">▼</span>
+      </button>
+      <div class="notes-body"><p>${master.notes}</p></div>
+    </div>`:''}
+
+    ${master?`<div class="srow"><div class="srow-t">Source ranks</div><div class="s3">
+      <div><div class="sc-l">MLB</div><div class="sc-v">${fmt(master.mlb)}</div></div>
+      <div><div class="sc-l">DD</div><div class="sc-v">${fmt(master.dd)}</div></div>
+      <div><div class="sc-l">Roto</div><div class="sc-v">${fmt(master.roto)}</div></div>
+      <div><div class="sc-l">StS</div><div class="sc-v">${fmt(master.sts)}</div></div>
+      <div><div class="sc-l">BA</div><div class="sc-v">${fmt(master.ba)}</div></div>
+      <div><div class="sc-l">Hobby</div><div class="sc-v">${fmt(master.hobby)}</div></div>
+    </div></div>`:''}
+
+    ${topE?`<div class="srow"><div class="srow-t">Latest ranking</div><div class="s3">
+      <div><div class="sc-l">Rank</div><div class="sc-v">#${topE.rank}</div></div>
+      <div><div class="sc-l">Prev</div><div class="sc-v">${fmt(topE.prev)}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtDiff(topE.diff)}</div></div>
+    </div></div>`:''}
+
+    ${master&&master.lastYr?`<div class="srow"><div class="srow-t">Year over year</div><div class="s3">
+      <div><div class="sc-l">Last year</div><div class="sc-v">$${master.lastYr}</div></div>
+      <div><div class="sc-l">Now</div><div class="sc-v">${fmtP(master.price)}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(master.chg)}</div></div>
+    </div></div>`:''}
+
+    ${d.priceChange?`<div class="srow"><div class="srow-t">Price movement</div><div class="s3">
+      <div><div class="sc-l">Original</div><div class="sc-v">$${safeNum(d.priceChange.orig).toFixed(2)}</div></div>
+      <div><div class="sc-l">Current</div><div class="sc-v">$${safeNum(d.priceChange.now).toFixed(2)}</div></div>
+      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(d.priceChange.pct)}</div></div>
+    </div></div>`:''}
+
+    ${buildHistoryCharts(p.name)}
+    ${wksHtml}
+    ${modalHsHistory(hist)}
+    ${modalCards(p.name)}`;
+
+  document.getElementById('mcontent').innerHTML=html;
+  document.getElementById('mwrap').classList.add('on');
+}
+
+// ── Portfolio ─────────────────────────────────────────────────────────────────
 function renderPortfolio() {
-  const fmtMoney = v => { const n=parseFloat(v); return isNaN(n)?'—':`$${n.toFixed(2)}`; };
-
-  // All prospect names (lowercase) from all sheets
   const prospectNames = new Set([
-    ...players.map(p=>normName(p.name)),
-    ...top200.map(p=>normName(p.name)),
-    ...top100.map(p=>normName(p.name)),
-    ...origTop200.map(p=>normName(p.name)),
-    ...origTop100.map(p=>normName(p.name)),
-    ...hotsheet.map(p=>normName(p.name)),
-  ]);
+    ...players,...top200,...top100,...origTop200,...origTop100,...hotsheet
+  ].map(p=>normName(p.name)));
 
-  // Only cards matching a prospect
-  const prospectCards = cards.filter(c => prospectNames.has(normName(c.player)));
+  const prospectCards = cards.filter(c=>prospectNames.has(normName(c.player)));
   const allOwned = prospectCards.filter(c=>!c.salePrice);
   const allSold  = prospectCards.filter(c=> c.salePrice);
-  const totalInvested   = allOwned.reduce((s,c)=>s+(parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0),0);
-  const totalNetProfit  = allSold.reduce((s,c)=>s+(parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0),0);
-  const totalSoldFor    = allSold.reduce((s,c)=>s+(parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0),0);
+  const totalInvested   = allOwned.reduce((s,c)=>s+safeNum(c.purchasePrice),0);
+  const totalSoldFor    = allSold.reduce((s,c)=>s+safeNum(c.salePrice),0);
+  const totalNetProfit  = allSold.reduce((s,c)=>s+safeNum(c.netProfit,true),0);
 
-  // Group ALL prospect cards by player (owned + sold), sort by total invested desc
+  const recentPurchases = [...allOwned].filter(c=>c.datePurchased||c.transactionDate)
+    .sort((a,b)=>parseDate(b.datePurchased||b.transactionDate)-parseDate(a.datePurchased||a.transactionDate)).slice(0,5);
+  const recentSales = [...allSold].filter(c=>c.transactionDate)
+    .sort((a,b)=>parseDate(b.transactionDate)-parseDate(a.transactionDate)).slice(0,5);
+
   const byPlayer = new Map();
   prospectCards.forEach(c=>{
     const k=normName(c.player);
     if(!byPlayer.has(k)) byPlayer.set(k,{name:k,ownedCards:[],soldCards:[],totalInvested:0,totalSoldFor:0,totalNet:0});
-    const entry=byPlayer.get(k);
-    if(!c.salePrice) {
-      entry.ownedCards.push(c);
-      entry.totalInvested += parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0;
-    } else {
-      entry.soldCards.push(c);
-      entry.totalSoldFor += parseFloat(String(c.salePrice||'0').replace(/[^0-9.]/g,''))||0;
-      entry.totalNet += parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0;
-    }
+    const e=byPlayer.get(k);
+    if(!c.salePrice){ e.ownedCards.push(c); e.totalInvested+=safeNum(c.purchasePrice); }
+    else{ e.soldCards.push(c); e.totalSoldFor+=safeNum(c.salePrice); e.totalNet+=safeNum(c.netProfit,true); }
   });
   const playerList=[...byPlayer.values()].sort((a,b)=>b.totalInvested-a.totalInvested);
-
-  // Recent purchases (last 5 owned prospect cards by date)
-  const recentPurchases = [...prospectCards]
-    .filter(c=>!c.salePrice && (c.datePurchased||c.transactionDate))
-    .sort((a,b)=>parseDate(b.datePurchased||b.transactionDate)-parseDate(a.datePurchased||a.transactionDate))
-    .slice(0,5);
-
-  // Recent sales (last 5 sold prospect cards by transaction date)
-  const recentSales = [...prospectCards]
-    .filter(c=>c.salePrice && c.transactionDate)
-    .sort((a,b)=>parseDate(b.transactionDate)-parseDate(a.transactionDate))
-    .slice(0,5);
-
-  const fmtD = v => { if(!v) return '—'; const d=new Date(v); return isNaN(d)?'—':`${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`; };
-  const safeP = v => (parseFloat(String(v||'0').replace(/[^0-9.]/g,''))||0).toFixed(2);
-
-  const recentHtml = `
-    <div class="srow" style="margin-bottom:11px">
-      <div class="srow-t">Recent purchases</div>
-      ${recentPurchases.length ? recentPurchases.map(c=>`
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--bdr)">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.fullCard||'—'}</div>
-            <div style="font-size:11px;color:var(--tx3)">${fmtD(c.datePurchased||c.transactionDate)}</div>
-          </div>
-          <div style="font-size:13px;font-weight:600;flex-shrink:0">$${safeP(c.purchasePrice)}</div>
-        </div>`).join('') : '<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent purchases</div>'}
-    </div>
-    <div class="srow" style="margin-bottom:11px">
-      <div class="srow-t">Recent sales</div>
-      ${recentSales.length ? recentSales.map(c=>{
-        const net=parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0;
-        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--bdr)">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.fullCard||'—'}</div>
-            <div style="font-size:11px;color:var(--tx3)">${fmtD(c.transactionDate)}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;font-weight:600">$${safeP(c.salePrice)}</div>
-            <div style="font-size:11px" class="${net>=0?'up':'dn'}">${net>=0?'+':''}$${Math.abs(net).toFixed(2)}</div>
-          </div>
-        </div>`;}).join('') : '<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent sales</div>'}
-    </div>`;
 
   const summaryHtml=`
     <div class="srow" style="margin-bottom:11px"><div class="srow-t">Portfolio summary</div><div class="s3">
@@ -792,271 +817,44 @@ function renderPortfolio() {
       <div><div class="sc-l">ROI on sold</div><div class="sc-v">${allSold.length>0&&(totalSoldFor-totalNetProfit)>0?`<span class="${totalNetProfit>=0?'up':'dn'}">${totalNetProfit>=0?'+':''}${((totalNetProfit/(totalSoldFor-totalNetProfit))*100).toFixed(1)}%</span>`:'—'}</div></div>
     </div></div>`;
 
-  const holdingsHtml = playerList.length ? `
-    <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">All player cards</div>
-    ${playerList.map(entry=>{
-      const ownedTier = entry.totalInvested>0 ? invTier(entry.totalInvested) : null;
-      const prospectName = players.find(p=>p.name.toLowerCase()===entry.name)?.name ||
-        entry.name.replace(/\b\w/g,l=>l.toUpperCase());
-      const ownedBadge = entry.ownedCards.length>0
-        ? `<span class="inv-badge ${ownedTier}">${entry.ownedCards.length} owned · $${entry.totalInvested.toFixed(0)}</span>`
-        : '';
-      const soldBadge = entry.soldCards.length>0
-        ? `<span class="sold-badge" style="margin-left:4px">${entry.soldCards.length} sold · <span class="${entry.totalNet>=0?'up':'dn'}">${entry.totalNet>=0?'+':''}$${entry.totalNet.toFixed(2)}</span></span>`
-        : '';
-      return `<div class="ct-entry${entry.ownedCards.length>0?' owned':''}" style="cursor:pointer" onclick="openPlayerFromPortfolio('${entry.name}')">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span style="font-size:14px;font-weight:500;flex:1">${prospectName}</span>
-          ${ownedBadge}${soldBadge}
-        </div>
-        ${entry.ownedCards.length>0?`<div class="ct-row" style="margin-top:6px">
-          ${entry.ownedCards.map(c=>`<div class="ct-stat"><div class="ct-l">${(c.fullCard||'').split(' ').slice(0,3).join(' ')}</div><div class="ct-v">$${(parseFloat(String(c.purchasePrice||'0').replace(/[^0-9.]/g,''))||0).toFixed(2)}</div></div>`).join('')}
-        </div>`:''}
-      </div>`;
-    }).join('')}` : '<div class="empty-msg" style="padding:20px 0">No prospect cards found</div>';
+  const recentHtml=`
+    <div class="srow" style="margin-bottom:11px"><div class="srow-t">Recent purchases</div>
+      ${recentPurchases.length?recentPurchases.map(c=>`<div class="recent-row">
+        <div class="recent-info"><div class="rc-name">${c.fullCard||'—'}</div><div class="rc-date">${fmtShortDate(c.datePurchased||c.transactionDate)}</div></div>
+        <div class="recent-price">$${safeNum(c.purchasePrice).toFixed(2)}</div>
+      </div>`).join(''):'<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent purchases</div>'}
+    </div>
+    <div class="srow" style="margin-bottom:11px"><div class="srow-t">Recent sales</div>
+      ${recentSales.length?recentSales.map(c=>{ const net=safeNum(c.netProfit,true); return `<div class="recent-row">
+        <div class="recent-info"><div class="rc-name">${c.fullCard||'—'}</div><div class="rc-date">${fmtShortDate(c.transactionDate)}</div></div>
+        <div class="recent-sale"><div class="rs-price">$${safeNum(c.salePrice).toFixed(2)}</div><div class="rs-net ${net>=0?'up':'dn'}">${net>=0?'+':''}$${Math.abs(net).toFixed(2)}</div></div>
+      </div>`; }).join(''):'<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent sales</div>'}
+    </div>`;
 
-  document.getElementById('list').innerHTML = summaryHtml + recentHtml + holdingsHtml;
-  document.getElementById('cntlbl').textContent = `${playerList.length} player${playerList.length===1?'':'s'}`;
+  const holdingsHtml=playerList.length?`
+    <div class="section-hdr">All player cards</div>
+    ${playerList.map(entry=>{
+      const tier=entry.totalInvested>0?invTier(entry.totalInvested):null;
+      const dispName=players.find(p=>normName(p.name)===entry.name)?.name||entry.name.replace(/\b\w/g,l=>l.toUpperCase());
+      const ownedBadge=entry.ownedCards.length>0?`<span class="inv-badge ${tier}">${entry.ownedCards.length} owned · $${entry.totalInvested.toFixed(0)}</span>`:'';
+      const soldBadge=entry.soldCards.length>0?`<span class="sold-badge" style="margin-left:4px">${entry.soldCards.length} sold · <span class="${entry.totalNet>=0?'up':'dn'}">${entry.totalNet>=0?'+':''}$${entry.totalNet.toFixed(2)}</span></span>`:'';
+      return `<div class="ct-entry${entry.ownedCards.length>0?' owned':''} port-player" onclick="openPlayerFromPortfolio('${entry.name}')">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:14px;font-weight:500;flex:1">${dispName}</span>${ownedBadge}${soldBadge}
+        </div>
+        ${entry.ownedCards.length>0?`<div class="ct-row" style="margin-top:6px">${entry.ownedCards.map(c=>`<div class="ct-stat"><div class="ct-l">${(c.fullCard||'').split(' ').slice(0,3).join(' ')}</div><div class="ct-v">$${safeNum(c.purchasePrice).toFixed(2)}</div></div>`).join('')}</div>`:''}
+      </div>`;
+    }).join('')}`:'<div class="empty-msg" style="padding:20px 0">No prospect cards found</div>';
+
+  document.getElementById('list').innerHTML=summaryHtml+recentHtml+holdingsHtml;
+  document.getElementById('cntlbl').textContent=`${playerList.length} player${playerList.length===1?'':'s'}`;
 }
 
 function openPlayerFromPortfolio(nameLower) {
-  const p = players.find(pl=>normName(pl.name)===nameLower);
-  if(p) { showDetail(p,'player'); return; }
-  const c = cards.find(cd=>normName(cd.player)===nameLower);
+  const p=players.find(pl=>normName(pl.name)===nameLower);
+  if(p){ showDetail(p,'player'); return; }
+  const c=cards.find(cd=>normName(cd.player)===nameLower);
   if(c) showDetail({name:c.player.replace(/\b\w/g,l=>l.toUpperCase()),team:'',pos:'',aff:''},'player');
-}
-
-// ── Render ────────────────────────────────────────────────────────────────────
-function render() {
-  const isTop=tab==='t200'||tab==='t100';
-  const isHS=tab==='hs';
-  const isPort=tab==='port';
-  const showChips=!isTop&&!isHS&&!isPort;
-  document.getElementById('chips').style.display=showChips?'flex':'none';
-  document.getElementById('chips2').style.display=showChips?'flex':'none';
-  renderSortChips();
-
-  if(isPort) { renderPortfolio(); return; }
-
-  const pool=getPool();
-  document.getElementById('cntlbl').textContent=`${pool.length} player${pool.length===1?'':'s'}`;
-
-  if(!pool.length){
-    document.getElementById('list').innerHTML='<div class="empty-msg">No players match</div>';
-    return;
-  }
-
-  let html='';
-  if(isHS) {
-    html=pool.map((r,i)=>buildCard(r.name,r.aff,r.pos,i,'hs')).join('');
-  } else if(isTop) {
-    html=pool.map((r,i)=>buildCard(r.name,r.team,tab==='t200'?'Hitter':'Pitcher',i,'top',{rank:r.rank,price:r.price})).join('');
-  } else {
-    html=pool.map((p,i)=>buildCard(p.name,p.team,p.pos,i,'player')).join('');
-  }
-
-  document.getElementById('list').innerHTML=html;
-  document.querySelectorAll('#list .card').forEach(c=>{
-    c.addEventListener('click',()=>showDetail(pool[+c.dataset.i],c.dataset.tp));
-  });
-}
-
-// ── Hot sheet stat rows ───────────────────────────────────────────────────────
-function hsStatRows(hist) {
-  if(!hist.length) return '';
-  return `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">Hot sheet history</div>
-    ${hist.map(h=>{
-      const isPit=h.pos==='Pitcher';
-      const stats=isPit
-        ?`<div><div class="hs-sl">IP</div><div class="hs-sv">${fmt(h.ip)}</div></div>
-          <div><div class="hs-sl">ERA</div><div class="hs-sv">${fmt(h.era)}</div></div>
-          <div><div class="hs-sl">WHIP</div><div class="hs-sv">${fmt(h.whip)}</div></div>
-          <div><div class="hs-sl">K/9</div><div class="hs-sv">${fmt(h.k9)}</div></div>
-          <div><div class="hs-sl">SO</div><div class="hs-sv">${fmt(h.sop)}</div></div>
-          <div><div class="hs-sl">BB</div><div class="hs-sv">${fmt(h.bbp)}</div></div>`
-        :`<div><div class="hs-sl">OPS</div><div class="hs-sv">${fmt(h.ops)}</div></div>
-          <div><div class="hs-sl">BA</div><div class="hs-sv">${fmt(h.ba)}</div></div>
-          <div><div class="hs-sl">HR</div><div class="hs-sv">${fmt(h.hr)}</div></div>
-          <div><div class="hs-sl">RBI</div><div class="hs-sv">${fmt(h.rbi)}</div></div>
-          <div><div class="hs-sl">SB</div><div class="hs-sv">${fmt(h.sb)}</div></div>
-          <div><div class="hs-sl">OBP</div><div class="hs-sv">${fmt(h.obp)}</div></div>`;
-      return `<div class="hs-entry${h.repeat?' repeat':''}">
-        <div class="hs-hdr">
-          <span class="hs-wk">${fmtDateLabel(h.date)||'Wk '+h.week}</span>
-          <span class="hs-lvl">${h.level}</span>
-          ${h.category?`<span class="hs-cat">${h.category}</span>`:''}
-          ${h.auto?`<span style="margin-left:auto;font-size:12px;font-weight:500">${h.auto}</span>`:''}
-        </div>
-        <div class="hs-stats">${stats}</div>
-        ${h.notes?`<div class="hs-notes">${h.notes}</div>`:''}
-      </div>`;
-    }).join('')}`;
-}
-
-// ── Card tracker section ──────────────────────────────────────────────────────
-function buildCardsHtml(name) {
-  const nm = normName(name);
-  const playerCards = cards.filter(c => normName(c.player) === nm);
-  if(!playerCards.length) return '';
-
-  const owned = playerCards.filter(c => !c.salePrice);
-  const sold  = playerCards.filter(c =>  c.salePrice);
-
-  const fmtDate = v => {
-    if(!v) return '—';
-    const d = new Date(v);
-    if(isNaN(d)) return v;
-    return `${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`;
-  };
-  const fmtMoney = v => {
-    if(!v) return '—';
-    const n = parseFloat(String(v).replace(/[^0-9.]/g,''));
-    return isNaN(n) ? '—' : `$${n.toFixed(2)}`;
-  };
-
-  const cs = getCardStats(name);
-
-  // P&L summary row
-  const totalInvestedOwned = cs.totalInvested;
-  const summaryHtml = `<div class="srow" style="margin-bottom:9px"><div class="srow-t">Cards summary</div><div class="s3">
-    <div><div class="sc-l">Owned</div><div class="sc-v">${owned.length}</div></div>
-    <div><div class="sc-l">Invested</div><div class="sc-v">$${totalInvestedOwned.toFixed(0)}</div></div>
-    <div><div class="sc-l">Sold</div><div class="sc-v">${sold.length}</div></div>
-    ${cs.totalNetProfit!==0?`<div><div class="sc-l">Net profit</div><div class="sc-v"><span class="${cs.totalNetProfit>=0?'up':'dn'}">${cs.totalNetProfit>=0?'+':''}$${Math.abs(cs.totalNetProfit).toFixed(2)}</span></div></div>`:''}
-    ${cs.avgHold!==null?`<div><div class="sc-l">Avg hold</div><div class="sc-v">${cs.avgHold}d</div></div>`:''}
-  </div></div>`;
-
-  // Best flip
-  let bestFlipHtml='';
-  if(cs.bestFlip && parseFloat(cs.bestFlip.netProfit||0)>0) {
-    const bf=cs.bestFlip;
-    bestFlipHtml=`<div class="srow" style="margin-bottom:9px"><div class="srow-t">Best flip</div>
-      <div style="font-size:12px;color:var(--tx2);margin-bottom:4px">${bf.fullCard||'—'}</div>
-      <div class="s3">
-        <div><div class="sc-l">Cost</div><div class="sc-v">${fmtMoney(bf.purchasePrice)}</div></div>
-        <div><div class="sc-l">Sold</div><div class="sc-v">${fmtMoney(bf.salePrice)}</div></div>
-        <div><div class="sc-l">Net</div><div class="sc-v"><span class="up">+$${parseFloat(bf.netProfit).toFixed(2)}</span></div></div>
-      </div>
-    </div>`;
-  }
-
-  const renderEntry = (c, isOwned) => {
-    const date = isOwned ? fmtDate(c.datePurchased||c.transactionDate) : fmtDate(c.transactionDate);
-    const serialStr = c.serialNo ? `<div class="ct-serial">/${c.serialNo}</div>` : '';
-    if(isOwned) {
-      return `<div class="ct-entry owned">
-        <div class="ct-name">${c.fullCard||'—'}</div>
-        <div class="ct-row">
-          <div class="ct-stat"><div class="ct-l">Purchased</div><div class="ct-v">${date}</div></div>
-          <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
-        </div>
-        ${serialStr}
-      </div>`;
-    } else {
-      const profit = c.netProfit ? parseFloat(c.netProfit) : null;
-      const profitCls = profit !== null ? (profit >= 0 ? 'up' : 'dn') : '';
-      const profitStr = profit !== null ? `<span class="${profitCls}">${profit >= 0 ? '+' : ''}$${Math.abs(profit).toFixed(2)}</span>` : '—';
-      return `<div class="ct-entry sold">
-        <div class="ct-name">${c.fullCard||'—'}</div>
-        <div class="ct-row">
-          <div class="ct-stat"><div class="ct-l">Sold</div><div class="ct-v">${date}</div></div>
-          <div class="ct-stat"><div class="ct-l">Cost</div><div class="ct-v">${fmtMoney(c.purchasePrice)}</div></div>
-          <div class="ct-stat"><div class="ct-l">Sold for</div><div class="ct-v">${fmtMoney(c.salePrice)}</div></div>
-          <div class="ct-stat"><div class="ct-l">Net</div><div class="ct-v">${profitStr}</div></div>
-        </div>
-        ${serialStr}
-      </div>`;
-    }
-  };
-
-  let html = `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">My cards</div>`;
-  html += summaryHtml + bestFlipHtml;
-  if(owned.length) {
-    html += `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin-bottom:8px">Owned (${owned.length})</div>`;
-    html += owned.map(c => renderEntry(c, true)).join('');
-  }
-  if(sold.length) {
-    html += `<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500;margin:${owned.length?'12px':0} 0 8px">Sold (${sold.length})</div>`;
-    html += sold.map(c => renderEntry(c, false)).join('');
-  }
-  return html;
-}
-
-// ── Detail modal ──────────────────────────────────────────────────────────────
-function showDetail(p, tp) {
-  // Resolve the canonical player record from Players All (for buy sheet data)
-  const master = players.find(b=>normName(b.name)===normName(p.name));
-  const resolved = resolvePlayerData(p.name);
-  const hist = hotsheet.filter(h=>normName(h.name)===normName(p.name)).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
-
-  // Current resolved price & rank
-  const currentPrice = resolved.price?(String(resolved.price).startsWith('$')?resolved.price:'$'+resolved.price):'—';
-  const currentRank  = resolved.rank ? '#'+resolved.rank : '—';
-
-  // Top list entry for this player (most recent)
-  const topEntry = [...mostRecent(top200),...mostRecent(top100)].find(e=>normName(e.name)===normName(p.name));
-
-  // Hot sheet weeks
-  const hsWeeks = [...new Set(hist.map(h=>h.week).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
-  const wksHtml = hsWeeks.length
-    ? `<div style="margin-bottom:9px">${hsWeeks.map(w=>`<span class="wk-badge">Wk${w}</span>`).join('')}</div>`
-    : '';
-
-  const html=`<div class="mname">${p.name}</div>
-    <div class="msub">${master?master.team:p.team||p.aff||''} · ${master?master.pos:p.pos||''}${master&&master.buy?' · Buy Rating '+master.buy:''}</div>
-
-    <div class="sgrid">
-      <div class="scard"><div class="slbl">Rank</div><div class="sval">${currentRank}</div></div>
-      <div class="scard"><div class="slbl">Price</div><div class="sval">${currentPrice}</div></div>
-      <div class="scard"><div class="slbl">Age</div><div class="sval">${fmt(master?master.age:p.age)}</div></div>
-      <div class="scard"><div class="slbl">Buy Rating</div><div class="sval">${fmt(master?master.buy:null)}</div></div>
-    </div>
-
-    ${master&&master.notes?`<div class="srow" style="padding:0;overflow:hidden">
-      <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.notes-arrow').textContent=this.nextElementSibling.style.display==='none'?'▼':'▲'"
-        style="width:100%;padding:10px 12px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:inherit">
-        <span style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;font-weight:500">Buy Sheet Notes</span>
-        <span class="notes-arrow" style="font-size:10px;color:var(--tx3)">▼</span>
-      </button>
-      <div style="display:none;padding:0 12px 10px">
-        <p style="font-size:13px;line-height:1.65;margin:0;color:var(--tx)">${master.notes}</p>
-      </div>
-    </div>`:''}
-
-    ${master?`<div class="srow"><div class="srow-t">Source ranks</div><div class="s3">
-      <div><div class="sc-l">MLB</div><div class="sc-v">${fmt(master.mlb)}</div></div>
-      <div><div class="sc-l">DD</div><div class="sc-v">${fmt(master.dd)}</div></div>
-      <div><div class="sc-l">Roto</div><div class="sc-v">${fmt(master.roto)}</div></div>
-      <div><div class="sc-l">StS</div><div class="sc-v">${fmt(master.sts)}</div></div>
-      <div><div class="sc-l">BA</div><div class="sc-v">${fmt(master.ba)}</div></div>
-      <div><div class="sc-l">Hobby</div><div class="sc-v">${fmt(master.hobby)}</div></div>
-    </div></div>`:''}
-
-    ${topEntry?`<div class="srow"><div class="srow-t">Latest ranking</div><div class="s3">
-      <div><div class="sc-l">Rank</div><div class="sc-v">#${topEntry.rank}</div></div>
-      <div><div class="sc-l">Prev</div><div class="sc-v">${fmt(topEntry.prev)}</div></div>
-      <div><div class="sc-l">Change</div><div class="sc-v">${fmtDiff(topEntry.diff)}</div></div>
-    </div></div>`:''}
-
-    ${master&&master.lastYr?`<div class="srow"><div class="srow-t">Year over year</div><div class="s3">
-      <div><div class="sc-l">Last year</div><div class="sc-v">$${master.lastYr}</div></div>
-      <div><div class="sc-l">Now</div><div class="sc-v">${fmtP(master.price)}</div></div>
-      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(master.chg)}</div></div>
-    </div></div>`:''}
-
-    ${resolved.priceChange?`<div class="srow"><div class="srow-t">Price movement</div><div class="s3">
-      <div><div class="sc-l">Original</div><div class="sc-v">$${resolved.priceChange.orig.replace(/[^0-9.]/g,'')}</div></div>
-      <div><div class="sc-l">Current</div><div class="sc-v">$${resolved.priceChange.now.replace(/[^0-9.]/g,'')}</div></div>
-      <div><div class="sc-l">Change</div><div class="sc-v">${fmtPct(resolved.priceChange.pct)}</div></div>
-    </div></div>`:''}
-
-    ${buildHistoryCharts(p.name)}
-    ${wksHtml}
-    ${hsStatRows(hist)}
-    ${buildCardsHtml(p.name)}`;
-
-  document.getElementById('mcontent').innerHTML=html;
-  document.getElementById('mwrap').classList.add('on');
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
