@@ -64,7 +64,9 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .card:active{opacity:.65}
 .card.repeat{border-left:3px solid var(--acc)}
 .rnum{flex-shrink:0;width:40px;height:40px;border-radius:8px;background:var(--acc-bg);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;text-align:center;line-height:1.1}
+.rnum.pitcher{background:#FEF3C7;color:#92400E}
 .rnum.empty{background:var(--b2-bg);color:var(--tx3);font-size:10px}
+@media(prefers-color-scheme:dark){.rnum.pitcher{background:#451a03;color:#FCD34D}}
 .pbox{flex-shrink:0;min-width:46px;height:40px;border-radius:8px;background:var(--b2-bg);color:var(--tx);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;padding:0 7px;white-space:nowrap}
 .pbox.empty{background:transparent;border:.5px solid var(--bdr);color:var(--tx3)}
 .cbody{flex:1;min-width:0}
@@ -217,7 +219,26 @@ const badge = br => {
 const matchQ = (name,team) => {
   if(!q) return true;
   const t=q.toLowerCase();
-  return (name||'').toLowerCase().includes(t)||(team||'').toLowerCase().includes(t);
+  if((name||'').toLowerCase().includes(t)) return true;
+  if((team||'').toLowerCase().includes(t)) return true;
+  // Full team name lookup
+  const fullName = (TEAM_NAMES[team||'']||'').toLowerCase();
+  return fullName.includes(t);
+};
+
+const TEAM_NAMES = {
+  'ARI':'Arizona Diamondbacks','ATL':'Atlanta Braves','BAL':'Baltimore Orioles',
+  'BOS':'Boston Red Sox','CHC':'Chicago Cubs','CHW':'Chicago White Sox',
+  'CIN':'Cincinnati Reds','CLE':'Cleveland Guardians','COL':'Colorado Rockies',
+  'DET':'Detroit Tigers','HOU':'Houston Astros','KC':'Kansas City Royals',
+  'LAA':'Los Angeles Angels','LAD':'Los Angeles Dodgers','MIA':'Miami Marlins',
+  'MIL':'Milwaukee Brewers','MIN':'Minnesota Twins','NYM':'New York Mets',
+  'NYY':'New York Yankees','OAK':'Oakland Athletics','PHI':'Philadelphia Phillies',
+  'PIT':'Pittsburgh Pirates','SD':'San Diego Padres','SEA':'Seattle Mariners',
+  'SF':'San Francisco Giants','STL':'St. Louis Cardinals','TB':'Tampa Bay Rays',
+  'TEX':'Texas Rangers','TOR':'Toronto Blue Jays','WSN':'Washington Nationals',
+  'SFG':'San Francisco Giants','SDP':'San Diego Padres','TBR':'Tampa Bay Rays',
+  'WSH':'Washington Nationals'
 };
 const parseDate = v => {
   if(!v) return 0;
@@ -237,21 +258,28 @@ function resolvePlayerData(name) {
   const candidates = [];
 
   const buyEntry = players.find(b=>b.name===name);
-  if(buyEntry) candidates.push({src:'buy', ts:parseDate(buyEntry.date), rank:cl(buyEntry.hobby), price:cl(buyEntry.price)});
+  if(buyEntry) candidates.push({src:'buy', ts:parseDate(buyEntry.date), rank:null, price:cl(buyEntry.price)});
 
+  // Only updated top lists contribute rank for the card box
+  const topEntries = [...top200,...top100].filter(e=>e.name===name);
+  topEntries.forEach(e=>candidates.push({src:'top', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+
+  // Orig lists contribute price history but NOT rank for the card box
   [...origTop200,...origTop100].filter(e=>e.name===name).forEach(e=>
-    candidates.push({src:'orig', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
-
-  [...top200,...top100].filter(e=>e.name===name).forEach(e=>
-    candidates.push({src:'top', ts:parseDate(e.date), rank:cl(e.rank), price:cl(e.price)}));
+    candidates.push({src:'orig', ts:parseDate(e.date), rank:null, price:cl(e.price)}));
 
   hotsheet.filter(h=>h.name===name).forEach(h=>
-    candidates.push({src:'hs', ts:parseDate(h.date), rank:cl(h.hobby), price:cl(h.auto)}));
+    candidates.push({src:'hs', ts:parseDate(h.date), rank:null, price:cl(h.auto)}));
 
   if(!candidates.length) return {rank:null,price:null,buy:null,hsLabel:null,priceChange:null};
 
   candidates.sort((a,b)=>b.ts!==a.ts?b.ts-a.ts:srcPri[a.src]-srcPri[b.src]);
   const best=candidates[0];
+
+  // Rank: only from the most recent updated top list entry
+  const topRank = topEntries.length
+    ? topEntries.reduce((a,b)=>parseDate(b.date)>=parseDate(a.date)?b:a).rank
+    : null;
 
   const buyRating = buyEntry?cl(buyEntry.buy):null;
 
@@ -273,7 +301,7 @@ function resolvePlayerData(name) {
     }
   }
 
-  return {rank:best.rank, price:best.price, buy:buyRating, hsLabel, priceChange};
+  return {rank:cl(topRank), price:best.price, buy:buyRating, hsLabel, priceChange};
 }
 
 // ── History charts ────────────────────────────────────────────────────────────
@@ -505,8 +533,9 @@ function buildCard(name, team, pos, i, tp, overrides={}) {
   const isRepeat  = hsLabel&&hsLabel.toLowerCase().includes('repeat');
   const isSleeper = hsLabel&&hsLabel.toLowerCase().includes('sleeper');
 
+  const isPitcher = (pos||'').toLowerCase().includes('pitcher');
   const rankHtml = rank
-    ? `<div class="rnum">#${rank}</div>`
+    ? `<div class="rnum${isPitcher?' pitcher':''}">#${rank}</div>`
     : `<div class="rnum empty">—</div>`;
 
   const priceStr = price?(String(price).startsWith('$')?price:'$'+price):'';
@@ -594,6 +623,49 @@ function renderPortfolio() {
   });
   const playerList=[...byPlayer.values()].sort((a,b)=>b.totalInvested-a.totalInvested);
 
+  // Recent purchases (last 5 owned prospect cards by date)
+  const recentPurchases = [...prospectCards]
+    .filter(c=>!c.salePrice && (c.datePurchased||c.transactionDate))
+    .sort((a,b)=>parseDate(b.datePurchased||b.transactionDate)-parseDate(a.datePurchased||a.transactionDate))
+    .slice(0,5);
+
+  // Recent sales (last 5 sold prospect cards by transaction date)
+  const recentSales = [...prospectCards]
+    .filter(c=>c.salePrice && c.transactionDate)
+    .sort((a,b)=>parseDate(b.transactionDate)-parseDate(a.transactionDate))
+    .slice(0,5);
+
+  const fmtD = v => { if(!v) return '—'; const d=new Date(v); return isNaN(d)?'—':`${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`; };
+  const safeP = v => (parseFloat(String(v||'0').replace(/[^0-9.]/g,''))||0).toFixed(2);
+
+  const recentHtml = `
+    <div class="srow" style="margin-bottom:11px">
+      <div class="srow-t">Recent purchases</div>
+      ${recentPurchases.length ? recentPurchases.map(c=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--bdr)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.fullCard||'—'}</div>
+            <div style="font-size:11px;color:var(--tx3)">${fmtD(c.datePurchased||c.transactionDate)}</div>
+          </div>
+          <div style="font-size:13px;font-weight:600;flex-shrink:0">$${safeP(c.purchasePrice)}</div>
+        </div>`).join('') : '<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent purchases</div>'}
+    </div>
+    <div class="srow" style="margin-bottom:11px">
+      <div class="srow-t">Recent sales</div>
+      ${recentSales.length ? recentSales.map(c=>{
+        const net=parseFloat(String(c.netProfit||'0').replace(/[^0-9.-]/g,''))||0;
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--bdr)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.fullCard||'—'}</div>
+            <div style="font-size:11px;color:var(--tx3)">${fmtD(c.transactionDate)}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:13px;font-weight:600">$${safeP(c.salePrice)}</div>
+            <div style="font-size:11px" class="${net>=0?'up':'dn'}">${net>=0?'+':''}$${Math.abs(net).toFixed(2)}</div>
+          </div>
+        </div>`;}).join('') : '<div style="font-size:12px;color:var(--tx3);padding:4px 0">No recent sales</div>'}
+    </div>`;
+
   const summaryHtml=`
     <div class="srow" style="margin-bottom:11px"><div class="srow-t">Portfolio summary</div><div class="s3">
       <div><div class="sc-l">Cards owned</div><div class="sc-v">${allOwned.length}</div></div>
@@ -630,7 +702,7 @@ function renderPortfolio() {
       </div>`;
     }).join('')}` : '<div class="empty-msg" style="padding:20px 0">No prospect cards found</div>';
 
-  document.getElementById('list').innerHTML = summaryHtml + holdingsHtml;
+  document.getElementById('list').innerHTML = summaryHtml + recentHtml + holdingsHtml;
   document.getElementById('cntlbl').textContent = `${playerList.length} player${playerList.length===1?'':'s'}`;
 }
 
