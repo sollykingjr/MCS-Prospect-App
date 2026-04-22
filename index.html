@@ -59,7 +59,11 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
 .chips2::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:5px 12px;border:.5px solid var(--bdr2);border-radius:20px;background:var(--surf);color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
 .chip.on{background:var(--acc-bg);color:var(--acc);border-color:var(--acc)}
-.meta{padding:7px 14px;font-size:11px;color:var(--tx3);font-weight:500;display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:.04em}
+.meta{padding:5px 14px;font-size:11px;color:var(--tx3);font-weight:500;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid var(--bdr)}
+.sort-chips{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;flex-shrink:0}
+.sort-chips::-webkit-scrollbar{display:none}
+.schip{flex-shrink:0;padding:3px 8px;border:.5px solid var(--bdr2);border-radius:20px;background:transparent;color:var(--tx3);font-size:10px;font-weight:500;cursor:pointer;font-family:inherit;text-transform:none;letter-spacing:0}
+.schip.on{background:var(--acc-bg);color:var(--acc);border-color:var(--acc)}
 .list{padding:0 10px 50px}
 /* Card: [rank box] [body] [price box] */
 .card{background:var(--surf);border:.5px solid var(--bdr);border-radius:10px;padding:9px 10px;margin-bottom:7px;cursor:pointer;display:flex;align-items:center;gap:8px}
@@ -177,7 +181,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;bac
   <button class="chip" data-p="pit">Pitchers</button>
 </div>
 
-<div class="meta"><span id="cntlbl">Loading...</span></div>
+<div class="meta"><span id="cntlbl">Loading...</span><div class="sort-chips" id="sortchips"></div></div>
 <div class="list" id="list"><div class="spin"><div class="spin-ring"></div>Fetching from Google Sheets...</div></div>
 
 <button class="rfab" id="rfab" title="Refresh">
@@ -200,7 +204,7 @@ const BASE = `https://sheets.googleapis.com/v4/spreadsheets/${SID}/values/`;
 const TRACKER_BASE = `https://sheets.googleapis.com/v4/spreadsheets/${TRACKER_SID}/values/`;
 
 let players=[], top200=[], top100=[], origTop200=[], origTop100=[], hotsheet=[], cards=[];
-let tab='all', brf='all', posf='all', q='';
+let tab='all', brf='all', posf='all', q='', sortBy='default';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const cl = v => (!v||String(v).trim()===''||v==='-'||v==='—'||v==='\\-') ? null : String(v).trim();
@@ -247,8 +251,8 @@ const TEAM_NAMES = {
   'SFG':'San Francisco Giants','SDP':'San Diego Padres','TBR':'Tampa Bay Rays',
   'WSH':'Washington Nationals'
 };
-// Case-insensitive name matching helper
-const normName = v => (v||'').toLowerCase().trim();
+// Case-insensitive, accent-insensitive name matching helper
+const normName = v => (v||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const parseDate = v => {
   if(!v) return 0;
   const d=new Date(v);
@@ -501,7 +505,51 @@ function invTier(amount) {
   return 'inv4';
 }
 
+// ── Sort options per tab ──────────────────────────────────────────────────────
+const SORT_OPTS = {
+  all:   [{k:'default',l:'BR'},{k:'rank',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  t200:  [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  t100:  [{k:'default',l:'Rank'},{k:'name',l:'Name'},{k:'price',l:'Price'},{k:'owned',l:'$ Owned'}],
+  hs:    [{k:'default',l:'Recent'},{k:'weeks',l:'Weeks'},{k:'streak',l:'Streak'},{k:'name',l:'Name'},{k:'owned',l:'$ Owned'}],
+};
+
+function renderSortChips() {
+  const opts = SORT_OPTS[tab];
+  const el = document.getElementById('sortchips');
+  if(!opts) { el.innerHTML=''; return; }
+  el.innerHTML = opts.map(o=>
+    `<button class="schip${sortBy===o.k||(!opts.find(x=>x.k===sortBy)&&o.k==='default')?' on':''}" data-s="${o.k}">${o.l}</button>`
+  ).join('');
+}
+
 // ── Pool ──────────────────────────────────────────────────────────────────────
+function applySort(pool, defaultSort) {
+  const s = SORT_OPTS[tab]?.find(o=>o.k===sortBy) ? sortBy : 'default';
+  if(s==='name') return pool.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(s==='rank') return pool.slice().sort((a,b)=>{
+    const ra=parseInt(resolvePlayerData(a.name).rank)||9999;
+    const rb=parseInt(resolvePlayerData(b.name).rank)||9999;
+    return ra-rb;
+  });
+  if(s==='price') return pool.slice().sort((a,b)=>{
+    const pa=parseFloat(String(resolvePlayerData(a.name).price||'0').replace(/[^0-9.]/g,''))||0;
+    const pb=parseFloat(String(resolvePlayerData(b.name).price||'0').replace(/[^0-9.]/g,''))||0;
+    return pb-pa;
+  });
+  if(s==='owned') return pool.slice().sort((a,b)=>getCardStats(b.name).totalInvested-getCardStats(a.name).totalInvested);
+  if(s==='weeks') return pool.slice().sort((a,b)=>{
+    const ia=getHsInfo(a.name,a.pos||a.aff||'');
+    const ib=getHsInfo(b.name,b.pos||b.aff||'');
+    return (ib?.totalAppearances||0)-(ia?.totalAppearances||0);
+  });
+  if(s==='streak') return pool.slice().sort((a,b)=>{
+    const ia=getHsInfo(a.name,a.pos||a.aff||'');
+    const ib=getHsInfo(b.name,b.pos||b.aff||'');
+    return (ib?.streak||0)-(ia?.streak||0);
+  });
+  return defaultSort(pool);
+}
+
 function mostRecent(arr) {
   const seen=new Map();
   arr.forEach(r=>{
@@ -512,10 +560,19 @@ function mostRecent(arr) {
 }
 
 function getPool() {
-  if(tab==='t200') return mostRecent(top200).filter(r=>matchQ(r.name,r.team)).sort((a,b)=>parseInt(a.rank)-parseInt(b.rank));
-  if(tab==='t100') return mostRecent(top100).filter(r=>matchQ(r.name,r.team)).sort((a,b)=>parseInt(a.rank)-parseInt(b.rank));
-  if(tab==='hs')   return mostRecent(hotsheet).filter(r=>matchQ(r.name,r.aff)).sort((a,b)=>parseDate(b.date)-parseDate(a.date));
-  if(tab==='port') return []; // handled separately in render()
+  if(tab==='t200') {
+    const base=mostRecent(top200).filter(r=>matchQ(r.name,r.team));
+    return applySort(base,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank)));
+  }
+  if(tab==='t100') {
+    const base=mostRecent(top100).filter(r=>matchQ(r.name,r.team));
+    return applySort(base,p=>p.slice().sort((a,b)=>parseInt(a.rank)-parseInt(b.rank)));
+  }
+  if(tab==='hs') {
+    const base=mostRecent(hotsheet).filter(r=>matchQ(r.name,r.aff));
+    return applySort(base,p=>p.slice().sort((a,b)=>parseDate(b.date)-parseDate(a.date)));
+  }
+  if(tab==='port') return [];
 
   let pool=[...players];
   if(brf==='5') pool=pool.filter(p=>parseInt(p.buy)===5);
@@ -525,12 +582,11 @@ function getPool() {
   if(posf==='hit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('hitter'));
   else if(posf==='pit') pool=pool.filter(p=>(p.pos||'').toLowerCase().includes('pitcher'));
   pool=pool.filter(p=>matchQ(p.name,p.team));
-  pool.sort((a,b)=>{
+  return applySort(pool,p=>p.slice().sort((a,b)=>{
     const ab=parseInt(a.buy)||0,bb=parseInt(b.buy)||0;
     if(ab!==bb) return bb-ab;
     return (parseFloat(b.price)||0)-(parseFloat(a.price)||0);
-  });
-  return pool;
+  }));
 }
 
 // ── Hot sheet frequency helper ────────────────────────────────────────────────
@@ -774,6 +830,7 @@ function render() {
   const showChips=!isTop&&!isHS&&!isPort;
   document.getElementById('chips').style.display=showChips?'flex':'none';
   document.getElementById('chips2').style.display=showChips?'flex':'none';
+  renderSortChips();
 
   if(isPort) { renderPortfolio(); return; }
 
@@ -1002,7 +1059,11 @@ function showDetail(p, tp) {
 document.getElementById('tabs').addEventListener('click',e=>{
   const t=e.target.closest('.tab'); if(!t) return;
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-  t.classList.add('on'); tab=t.dataset.t; window.scrollTo(0,0); render();
+  t.classList.add('on'); tab=t.dataset.t; sortBy='default'; window.scrollTo(0,0); render();
+});
+document.getElementById('sortchips').addEventListener('click',e=>{
+  const c=e.target.closest('.schip'); if(!c) return;
+  sortBy=c.dataset.s; render();
 });
 document.getElementById('chips').addEventListener('click',e=>{
   const c=e.target.closest('.chip'); if(!c) return;
