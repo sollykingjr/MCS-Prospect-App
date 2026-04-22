@@ -525,29 +525,33 @@ function renderSortChips() {
 // ── Pool ──────────────────────────────────────────────────────────────────────
 function applySort(pool, defaultSort) {
   const s = SORT_OPTS[tab]?.find(o=>o.k===sortBy) ? sortBy : 'default';
-  if(s==='name') return pool.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  if(s==='rank') return pool.slice().sort((a,b)=>{
-    const ra=parseInt(resolvePlayerData(a.name).rank)||9999;
-    const rb=parseInt(resolvePlayerData(b.name).rank)||9999;
-    return ra-rb;
+  if(s==='default') return defaultSort(pool);
+
+  // Pre-compute sort keys once per player
+  const cache = new Map();
+  pool.forEach(p=>{
+    const name = p.name;
+    if(s==='rank') {
+      cache.set(name, parseInt(resolvePlayerData(name).rank)||9999);
+    } else if(s==='price') {
+      const pr = resolvePlayerData(name).price||'0';
+      cache.set(name, parseFloat(String(pr).replace(/[^0-9.]/g,''))||0);
+    } else if(s==='owned') {
+      cache.set(name, getCardStats(name).totalInvested);
+    } else if(s==='weeks') {
+      cache.set(name, getHsInfo(name, p.pos||p.aff||'')?.totalAppearances||0);
+    } else if(s==='streak') {
+      cache.set(name, getHsInfo(name, p.pos||p.aff||'')?.streak||0);
+    }
   });
-  if(s==='price') return pool.slice().sort((a,b)=>{
-    const pa=parseFloat(String(resolvePlayerData(a.name).price||'0').replace(/[^0-9.]/g,''))||0;
-    const pb=parseFloat(String(resolvePlayerData(b.name).price||'0').replace(/[^0-9.]/g,''))||0;
-    return pb-pa;
+
+  return pool.slice().sort((a,b)=>{
+    if(s==='name') return (a.name||'').localeCompare(b.name||'');
+    const va = cache.get(a.name)??0;
+    const vb = cache.get(b.name)??0;
+    // rank: low is better. owned/weeks/streak/price: high is better
+    return s==='rank' ? va-vb : vb-va;
   });
-  if(s==='owned') return pool.slice().sort((a,b)=>getCardStats(b.name).totalInvested-getCardStats(a.name).totalInvested);
-  if(s==='weeks') return pool.slice().sort((a,b)=>{
-    const ia=getHsInfo(a.name,a.pos||a.aff||'');
-    const ib=getHsInfo(b.name,b.pos||b.aff||'');
-    return (ib?.totalAppearances||0)-(ia?.totalAppearances||0);
-  });
-  if(s==='streak') return pool.slice().sort((a,b)=>{
-    const ia=getHsInfo(a.name,a.pos||a.aff||'');
-    const ib=getHsInfo(b.name,b.pos||b.aff||'');
-    return (ib?.streak||0)-(ia?.streak||0);
-  });
-  return defaultSort(pool);
 }
 
 function mostRecent(arr) {
